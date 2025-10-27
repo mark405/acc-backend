@@ -14,6 +14,7 @@ import com.traffgun.acc.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "User login", description = "Authenticate user and return JWT tokens as HttpOnly cookies")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         var userDetails = userService.loadUserByUsername(request.getUsername());
         if (!userService.checkPassword(request.getPassword(), userDetails.getPassword())) {
             throw new InvalidUsernameOrPasswordException();
@@ -48,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request) {
+    public RegisterResponse register(@RequestBody @Valid RegisterRequest request) {
         if (userService.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException();
         }
