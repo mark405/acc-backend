@@ -31,7 +31,7 @@ public class CookieUtils {
         cookie.setMaxAge(maxAge);
 
         response.addHeader("Set-Cookie",
-                String.format("%s=%s; Max-Age=%d; Path=%s; Secure; HttpOnly; SameSite=Strict",
+                String.format("%s=%s; Max-Age=%d; Path=%s; Secure; HttpOnly; SameSite=None",
                         name, value, maxAge, path));
     }
 
