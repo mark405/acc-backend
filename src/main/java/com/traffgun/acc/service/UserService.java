@@ -1,6 +1,9 @@
 package com.traffgun.acc.service;
 
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
+import com.traffgun.acc.exception.EntityNotFoundException;
+import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional(readOnly = true)
@@ -24,7 +28,12 @@ public class UserService implements UserDetailsService {
 
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
+        employeeRepository.save(employee);
+
+        return saved;
     }
 
     @Transactional(readOnly = true)

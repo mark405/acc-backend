@@ -5,7 +5,6 @@ import com.traffgun.acc.dto.register.RegisterResponse;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.model.Role;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component

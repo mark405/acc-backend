@@ -2,6 +2,7 @@ package com.traffgun.acc.entity;
 
 import com.traffgun.acc.model.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -17,9 +18,11 @@ public class User {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @NotBlank
     private String username;
 
     @Column(nullable = false)
+    @NotBlank
     private String password;
 
     @Column(nullable = false)

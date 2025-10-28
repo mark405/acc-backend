@@ -24,12 +24,6 @@ public class CookieUtils {
     }
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge, String path) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath(path);
-        cookie.setMaxAge(maxAge);
-
         response.addHeader("Set-Cookie",
                 String.format("%s=%s; Max-Age=%d; Path=%s; Secure; HttpOnly; SameSite=None",
                         name, value, maxAge, path));

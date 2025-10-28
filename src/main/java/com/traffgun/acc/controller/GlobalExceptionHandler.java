@@ -1,10 +1,8 @@
 package com.traffgun.acc.controller;
 
+import com.traffgun.acc.dto.error.EntityNotFoundResponse;
 import com.traffgun.acc.dto.error.ErrorResponse;
-import com.traffgun.acc.exception.InvalidAccessTokenException;
-import com.traffgun.acc.exception.InvalidRefreshTokenException;
-import com.traffgun.acc.exception.InvalidUsernameOrPasswordException;
-import com.traffgun.acc.exception.UserAlreadyExistsException;
+import com.traffgun.acc.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -69,5 +67,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new EntityNotFoundResponse(ex.getId(), ex.getMessage());
     }
 }
