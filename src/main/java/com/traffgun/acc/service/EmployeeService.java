@@ -27,7 +27,7 @@ public class EmployeeService {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        if ((nameOrComment == null || nameOrComment.isBlank())) {
+        if (nameOrComment == null || nameOrComment.isBlank()) {
             return employeeRepository.findAll(pageable);
         } else {
             return employeeRepository.findByNameContainingIgnoreCaseOrCommentContainingIgnoreCase(nameOrComment, nameOrComment, pageable);

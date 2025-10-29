@@ -1,18 +1,19 @@
 package com.traffgun.acc.controller;
 
+import com.traffgun.acc.dto.user.ChangePasswordRequest;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.entity.User;
-import com.traffgun.acc.exception.InvalidAccessTokenException;
-import com.traffgun.acc.exception.UserNotFoundException;
+import com.traffgun.acc.exception.EntityNotFoundException;
+import com.traffgun.acc.exception.UserIsAdminException;
 import com.traffgun.acc.mapper.UserMapper;
+import com.traffgun.acc.model.Role;
 import com.traffgun.acc.service.UserService;
-import com.traffgun.acc.utils.CookieUtils;
-import com.traffgun.acc.utils.JwtUtils;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,20 +22,45 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
-    private final JwtUtils jwtUtils;
 
     @GetMapping("/me")
-    public UserResponse getCurrentUser(HttpServletRequest request) {
-        String accessToken = CookieUtils.getToken(request, CookieUtils.ACCESS_TOKEN_COOKIE);
-
-        if (accessToken == null || !jwtUtils.validateToken(accessToken, "access")) {
-            throw new InvalidAccessTokenException();
-        }
-
-        String username = jwtUtils.extractUsername(accessToken);
-
-        User user = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
-
+    public UserResponse getCurrentUser() throws IllegalAccessException {
+        User user = userService.getCurrentUser();
         return userMapper.toUserDto(user);
+    }
+
+    @GetMapping
+    public Page<UserResponse> getAllUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) Role role,
+            @RequestParam(name = "sort_by", defaultValue = "username") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int size
+    ) {
+        Page<User> users = userService.findAll(username, role, sortBy, direction, page, size);
+        return users.map(userMapper::toUserDto);
+    }
+
+    @PostMapping("/change-password/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
+        User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        if (user.getRole() == Role.ADMIN) {
+            throw new UserIsAdminException();
+        }
+        userService.changePassword(user, request);
+        return ResponseEntity.accepted().build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        if (user.getRole() == Role.ADMIN) {
+            throw new UserIsAdminException();
+        }
+        userService.deleteById(id);
+        return ResponseEntity.accepted().build();
     }
 }

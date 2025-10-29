@@ -30,7 +30,9 @@ public class UserMapper {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getRole()
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getModifiedAt()
         );
     }
 }

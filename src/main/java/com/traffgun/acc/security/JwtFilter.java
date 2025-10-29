@@ -28,6 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws IOException, ServletException {
 
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String jwt = CookieUtils.getToken(request, CookieUtils.ACCESS_TOKEN_COOKIE);
         String username = null;
 
