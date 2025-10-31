@@ -31,6 +31,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "User login", description = "Authenticate user and return JWT tokens as HttpOnly cookies")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         var userDetails = userService.loadUserByUsername(request.getUsername());
         if (!userService.checkPassword(request.getPassword(), userDetails.getPassword())) {
@@ -43,7 +44,7 @@ public class AuthController {
         CookieUtils.addCookie(response, CookieUtils.ACCESS_TOKEN_COOKIE, accessToken, (int) (jwtUtils.getAccessExpiration() / 1000), "/api");
         CookieUtils.addCookie(response, CookieUtils.REFRESH_TOKEN_COOKIE, refreshToken, (int) (jwtUtils.getRefreshExpiration() / 1000), "/api/auth/refresh");
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/register")
@@ -58,6 +59,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Refresh access token", description = "Use refresh token cookie to get a new access token")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = CookieUtils.getToken(request, CookieUtils.REFRESH_TOKEN_COOKIE);
 
@@ -72,15 +74,16 @@ public class AuthController {
         CookieUtils.addCookie(response, CookieUtils.ACCESS_TOKEN_COOKIE, newAccessToken,
                 (int) (jwtUtils.getAccessExpiration() / 1000), "/api");
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")
     @Operation(summary = "Logout user", description = "Clear access and refresh cookies and invalidate refresh token")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         CookieUtils.clearCookie(response, CookieUtils.ACCESS_TOKEN_COOKIE, "/api");
         CookieUtils.clearCookie(response, CookieUtils.REFRESH_TOKEN_COOKIE, "/api/auth/refresh");
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -11,6 +11,7 @@ import com.traffgun.acc.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,23 +45,25 @@ public class UserController {
 
     @PostMapping("/change-password/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         if (user.getRole() == Role.ADMIN) {
             throw new UserIsAdminException();
         }
         userService.changePassword(user, request);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         if (user.getRole() == Role.ADMIN) {
             throw new UserIsAdminException();
         }
         userService.deleteById(id);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 }
