@@ -1,7 +1,7 @@
 package com.traffgun.acc.controller;
 
-import com.traffgun.acc.dto.board.CreateBoardRequest;
 import com.traffgun.acc.dto.board.BoardResponse;
+import com.traffgun.acc.dto.board.CreateBoardRequest;
 import com.traffgun.acc.dto.board.UpdateBoardRequest;
 import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -27,6 +27,12 @@ public class BoardController {
     @GetMapping
     public List<BoardResponse> getAllBoards(@RequestParam("type") OperationType type) {
         return boardService.findAll(type).stream().map(boardMapper::toDto).toList();
+    }
+
+    @GetMapping("/{id}")
+    public BoardResponse getBoardById(@PathVariable Long id) {
+        Board board = boardService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        return boardMapper.toDto(board);
     }
 
     @PostMapping()
