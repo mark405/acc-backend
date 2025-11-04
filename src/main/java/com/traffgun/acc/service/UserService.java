@@ -9,6 +9,7 @@ import com.traffgun.acc.exception.UserNotFoundException;
 import com.traffgun.acc.model.Role;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.UserRepository;
+import com.traffgun.acc.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,19 +82,11 @@ public class UserService implements UserDetailsService {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Specification<User> spec = (root, query, builder) -> null;
+        Specification<User> spec = (root, query, cb) -> cb.conjunction();
 
-        if (username != null && !username.isBlank()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("username")), "%" + username.toLowerCase() + "%")
-            );
-        }
-
-        if (role != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("role"), role)
-            );
-        }
+        spec = spec
+                .and(UserSpecification.hasUsernameLike(username))
+                .and(UserSpecification.hasRole(role));
 
         return userRepository.findAll(spec, pageable);
     }
