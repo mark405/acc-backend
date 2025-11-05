@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Data
 public class OperationFilter {
@@ -12,7 +13,7 @@ public class OperationFilter {
     private Long boardId;
     private OperationType type;
     @Nullable
-    private Long categoryId;
+    private Set<Long> categoryIds;
     @Nullable
     private String comment;
     @Nullable

@@ -4,6 +4,7 @@ import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.model.OperationType;
 import org.springframework.data.jpa.domain.Specification;
 import java.time.Instant;
+import java.util.Set;
 
 public class OperationSpecification {
 
@@ -17,9 +18,11 @@ public class OperationSpecification {
                 type == null ? null : cb.equal(root.get("operationType"), type);
     }
 
-    public static Specification<Operation> hasCategoryId(Long categoryId) {
+    public static Specification<Operation> hasCategoryIds(Set<Long> categoryIds) {
         return (root, query, cb) ->
-                categoryId == null ? null : cb.equal(root.get("category").get("id"), categoryId);
+                (categoryIds == null || categoryIds.isEmpty())
+                        ? null
+                        : root.get("category").get("id").in(categoryIds);
     }
 
     public static Specification<Operation> hasCommentLike(String comment) {

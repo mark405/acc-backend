@@ -30,12 +30,12 @@ public class OperationController {
         return operationMapper.toDto(operation);
     }
 
-    @GetMapping
-    public Page<OperationResponse> getAllOperations(@Valid @ModelAttribute OperationFilter filter) {
+    @PostMapping()
+    public Page<OperationResponse> getAllOperations(@Valid @RequestBody OperationFilter filter) {
         return operationService.findAll(filter).map(operationMapper::toDto);
     }
 
-    @PostMapping()
+    @PostMapping("/create")
     public OperationResponse createOperation(@RequestBody @Valid CreateOperationRequest request) {
         return operationMapper.toDto(operationService.create(request));
     }

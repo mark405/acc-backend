@@ -36,7 +36,7 @@ public class OperationService {
         spec = spec
                 .and(OperationSpecification.hasBoardId(filter.getBoardId()))
                 .and(OperationSpecification.hasType(filter.getType()))
-                .and(OperationSpecification.hasCategoryId(filter.getCategoryId()))
+                .and(OperationSpecification.hasCategoryIds(filter.getCategoryIds()))
                 .and(OperationSpecification.hasCommentLike(filter.getComment()))
                 .and(OperationSpecification.hasDateAfter(filter.getStartDate()))
                 .and(OperationSpecification.hasDateBefore(filter.getEndDate()));
