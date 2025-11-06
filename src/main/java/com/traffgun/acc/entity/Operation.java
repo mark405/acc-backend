@@ -3,6 +3,7 @@ package com.traffgun.acc.entity;
 import com.traffgun.acc.model.OperationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
@@ -20,7 +21,7 @@ public class Operation {
     private Long id;
 
     @Column(nullable = false)
-    @NotBlank
+    @NotNull
     private Double amount;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

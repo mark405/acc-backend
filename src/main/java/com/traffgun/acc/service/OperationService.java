@@ -9,7 +9,6 @@ import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.repository.OperationRepository;
 import com.traffgun.acc.specification.OperationSpecification;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
