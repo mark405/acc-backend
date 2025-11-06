@@ -24,7 +24,7 @@ public class Employee {
 
     private Double rating;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",

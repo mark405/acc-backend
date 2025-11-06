@@ -6,6 +6,8 @@ import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.model.LevelType;
 import com.traffgun.acc.model.OperationType;
 import com.traffgun.acc.repository.BoardRepository;
+import com.traffgun.acc.repository.CategoryRepository;
+import com.traffgun.acc.repository.OperationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +18,11 @@ import java.util.Optional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final OperationRepository operationRepository;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, OperationRepository operationRepository) {
         this.boardRepository = boardRepository;
+        this.operationRepository = operationRepository;
 
         if (!boardRepository.existsByLevelTypeAndOperationType(LevelType.MAIN, OperationType.EXPENSE)) {
             boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.EXPENSE).build());
@@ -42,6 +46,7 @@ public class BoardService {
 
     @Transactional
     public void deleteById(Long id) {
+        operationRepository.deleteByBoardId(id);
         boardRepository.deleteById(id);
     }
 

@@ -64,6 +64,7 @@ public class OperationService {
                 .board(boardService.findById(request.getBoardId()).orElseThrow(() -> new EntityNotFoundException(request.getBoardId())))
                 .comment(request.getComment())
                 .operationType(request.getOperationType())
+                .date(request.getDate())
                 .build());
     }
 

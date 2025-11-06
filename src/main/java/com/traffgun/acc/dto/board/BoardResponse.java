@@ -12,5 +12,4 @@ public class BoardResponse {
     private String name;
     private LevelType levelType;
     private OperationType operationType;
-
 }

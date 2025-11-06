@@ -2,7 +2,6 @@ package com.traffgun.acc.entity;
 
 import com.traffgun.acc.model.OperationType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 

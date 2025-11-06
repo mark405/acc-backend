@@ -4,6 +4,7 @@ import com.traffgun.acc.dto.category.CreateCategoryRequest;
 import com.traffgun.acc.dto.category.UpdateCategoryRequest;
 import com.traffgun.acc.entity.Category;
 import com.traffgun.acc.repository.CategoryRepository;
+import com.traffgun.acc.repository.OperationRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final OperationRepository operationRepository;
 
     @Transactional(readOnly = true)
     public List<Category> findAll() {
@@ -26,6 +28,7 @@ public class CategoryService {
 
     @Transactional
     public void deleteById(Long id) {
+        operationRepository.deleteByCategoryId(id);
         categoryRepository.deleteById(id);
     }
 
