@@ -19,4 +19,8 @@ public class Category {
     private String name;
 
     private String comment;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
 }

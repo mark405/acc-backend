@@ -19,10 +19,12 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final OperationRepository operationRepository;
+    private final CategoryRepository categoryRepository;
 
-    public BoardService(BoardRepository boardRepository, OperationRepository operationRepository) {
+    public BoardService(BoardRepository boardRepository, OperationRepository operationRepository, CategoryRepository categoryRepository) {
         this.boardRepository = boardRepository;
         this.operationRepository = operationRepository;
+        this.categoryRepository = categoryRepository;
 
         if (!boardRepository.existsByLevelTypeAndOperationType(LevelType.MAIN, OperationType.EXPENSE)) {
             boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.EXPENSE).build());
@@ -31,6 +33,11 @@ public class BoardService {
         if (!boardRepository.existsByLevelTypeAndOperationType(LevelType.MAIN, OperationType.INCOME)) {
             boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.INCOME).build());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Board findMainBoard(OperationType operationType) {
+        return boardRepository.findByLevelTypeAndOperationType(LevelType.MAIN, operationType);
     }
 
     @Transactional(readOnly = true)
@@ -47,6 +54,7 @@ public class BoardService {
     @Transactional
     public void deleteById(Long id) {
         operationRepository.deleteByBoardId(id);
+        categoryRepository.deleteByBoardId(id);
         boardRepository.deleteById(id);
     }
 

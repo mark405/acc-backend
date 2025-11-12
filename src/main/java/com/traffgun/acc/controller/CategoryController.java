@@ -31,8 +31,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryResponse> getAllCategories() {
-        return categoryService.findAll().stream().map(categoryMapper::toDto).toList();
+    public List<CategoryResponse> getAllCategories(@RequestParam("board_id") Long boardId) {
+        return categoryService.findAll(boardId).stream().map(categoryMapper::toDto).toList();
     }
 
     @PostMapping()

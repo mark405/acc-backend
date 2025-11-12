@@ -2,10 +2,12 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.category.CreateCategoryRequest;
 import com.traffgun.acc.dto.category.UpdateCategoryRequest;
+import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.entity.Category;
+import com.traffgun.acc.exception.EntityNotFoundException;
+import com.traffgun.acc.repository.BoardRepository;
 import com.traffgun.acc.repository.CategoryRepository;
 import com.traffgun.acc.repository.OperationRepository;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final OperationRepository operationRepository;
+    private final BoardRepository boardRepository;
 
     @Transactional(readOnly = true)
-    public List<Category> findAll() {
-        return categoryRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+    public List<Category> findAll(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(boardId));
+        return categoryRepository.findAllByBoard(board, Sort.by(Sort.Direction.ASC, "name"));
     }
 
     @Transactional
@@ -40,6 +44,7 @@ public class CategoryService {
     @Transactional
     public Category create(CreateCategoryRequest request) {
         return categoryRepository.save(Category.builder()
+                .board(boardRepository.findById(request.getBoardId()).orElseThrow(() -> new EntityNotFoundException(request.getBoardId())))
                 .name(request.getName())
                 .comment(request.getComment())
                 .build()
