@@ -36,12 +36,12 @@ public class OperationController {
     }
 
     @PostMapping("/create")
-    public OperationResponse createOperation(@RequestBody @Valid CreateOperationRequest request) {
+    public OperationResponse createOperation(@RequestBody @Valid CreateOperationRequest request) throws IllegalAccessException {
         return operationMapper.toDto(operationService.create(request));
     }
 
     @PutMapping("/{id}")
-    public OperationResponse updateOperation(@PathVariable("id") Long id, @RequestBody @Valid UpdateOperationRequest request) {
+    public OperationResponse updateOperation(@PathVariable("id") Long id, @RequestBody @Valid UpdateOperationRequest request) throws IllegalAccessException {
         Operation operation = operationService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         Operation updatedOperation = operationService.update(operation, request);
         return operationMapper.toDto(updatedOperation);
@@ -49,7 +49,7 @@ public class OperationController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteOperation(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteOperation(@PathVariable("id") Long id) throws IllegalAccessException {
         operationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

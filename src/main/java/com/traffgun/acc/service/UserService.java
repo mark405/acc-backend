@@ -2,11 +2,16 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
 import com.traffgun.acc.entity.Employee;
+import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
 import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.history.HistoryType;
+import com.traffgun.acc.model.history.UserCreatedHistoryBody;
+import com.traffgun.acc.model.history.UserPasswordChangedHistoryBody;
 import com.traffgun.acc.repository.EmployeeRepository;
+import com.traffgun.acc.repository.HistoryRepository;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +36,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final HistoryRepository historyRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User getCurrentUser() throws IllegalAccessException {
@@ -48,6 +54,7 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByUsername(username);
     }
 
+    @Transactional
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User saved = userRepository.save(user);
@@ -56,6 +63,13 @@ public class UserService implements UserDetailsService {
             Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
             employeeRepository.save(employee);
         }
+
+        historyRepository.save(History.builder()
+                .user(saved)
+                .type(HistoryType.USER)
+                .body(new UserCreatedHistoryBody(saved.getUsername()))
+                .build()
+        );
 
         return saved;
     }
@@ -95,13 +109,20 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void changePassword(User user, ChangePasswordRequest request) {
+    public void changePassword(User user, ChangePasswordRequest request) throws IllegalAccessException {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
+
+        historyRepository.save(History.builder()
+                .user(getCurrentUser())
+                .type(HistoryType.USER)
+                .body(new UserPasswordChangedHistoryBody(user.getUsername()))
+                .build()
+        );
     }
 
     @Transactional

@@ -49,7 +49,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public RegisterResponse register(@RequestBody @Valid RegisterRequest request) {
+    public RegisterResponse register(@RequestBody @Valid RegisterRequest request){
         if (userService.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException();
         }

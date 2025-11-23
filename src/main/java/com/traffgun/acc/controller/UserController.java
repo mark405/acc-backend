@@ -46,7 +46,7 @@ public class UserController {
     @PostMapping("/change-password/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) throws IllegalAccessException {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         if (user.getRole() == Role.ADMIN) {
             throw new UserIsAdminException();
