@@ -51,15 +51,12 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User saved = userRepository.save(user);
 
-        Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
-        employeeRepository.save(employee);
+        if (saved.getRole() != Role.ADMIN) {
+            Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
+            employeeRepository.save(employee);
+        }
 
         return saved;
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 
     @Override
