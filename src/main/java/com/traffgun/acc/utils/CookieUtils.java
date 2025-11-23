@@ -23,17 +23,17 @@ public class CookieUtils {
         return accessToken;
     }
 
-    public void addCookie(HttpServletResponse response, String name, String value, int maxAge, String path) {
-        response.addHeader("Set-Cookie",
-                String.format("%s=%s; Max-Age=%d; Path=%s; Secure; HttpOnly; SameSite=None",
-                        name, value, maxAge, path));
-    }
 //    public void addCookie(HttpServletResponse response, String name, String value, int maxAge, String path) {
-//        // Remove Secure for HTTP
 //        response.addHeader("Set-Cookie",
-//                String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly; SameSite=Lax",
+//                String.format("%s=%s; Max-Age=%d; Path=%s; Secure; HttpOnly; SameSite=None",
 //                        name, value, maxAge, path));
 //    }
+    public void addCookie(HttpServletResponse response, String name, String value, int maxAge, String path) {
+        // Remove Secure for HTTP
+        response.addHeader("Set-Cookie",
+                String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly; SameSite=Lax",
+                        name, value, maxAge, path));
+    }
 
     public void clearCookie(HttpServletResponse response, String name, String path) {
         Cookie cookie = new Cookie(name, "");
