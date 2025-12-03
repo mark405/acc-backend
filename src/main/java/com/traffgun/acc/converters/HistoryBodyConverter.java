@@ -35,6 +35,11 @@ public class HistoryBodyConverter implements AttributeConverter<HistoryBody, Str
                 case OPERATION_CREATED -> OperationCreatedHistoryBody.class;
                 case OPERATION_DELETED -> OperationDeletedHistoryBody.class;
                 case OPERATION_UPDATED -> OperationUpdatedHistoryBody.class;
+                case EMPLOYEE_INFO_CREATED -> EmployeeInfoCreatedHistoryBody.class;
+                case EMPLOYEE_INFO_UPDATED -> EmployeeInfoUpdatedHistoryBody.class;
+                case EMPLOYEE_INFO_DELETED -> EmployeeInfoDeletedHistoryBody.class;
+                case EMPLOYEE_ADVANCE_CREATED -> EmployeeAdvanceCreatedHistoryBody.class;
+                case EMPLOYEE_ADVANCE_DELETED -> EmployeeAdvanceDeletedHistoryBody.class;
             };
 
             return (HistoryBody) mapper.readValue(dbData, cl);

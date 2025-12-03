@@ -38,14 +38,14 @@ public class EmployeeFinanceController {
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public EmployeeFinanceResponse createFinance(@RequestBody @Valid CreateFinanceRequest request) {
+    public EmployeeFinanceResponse createFinance(@RequestBody @Valid CreateFinanceRequest request) throws IllegalAccessException {
         EmployeeFinance finance = service.create(request);
         return mapper.toDto(finance, Collections.emptyList());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public EmployeeFinanceResponse updateFinance(@PathVariable("id") Long id, @RequestBody @Valid UpdateFinanceRequest request) {
+    public EmployeeFinanceResponse updateFinance(@PathVariable("id") Long id, @RequestBody @Valid UpdateFinanceRequest request) throws IllegalAccessException {
         EmployeeFinance finance = service.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         EmployeeFinance updatedFinance = service.update(finance, request);
         return mapper.toDto(updatedFinance, Collections.emptyList());
@@ -54,7 +54,7 @@ public class EmployeeFinanceController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteFinance(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteFinance(@PathVariable("id") Long id) throws IllegalAccessException {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }

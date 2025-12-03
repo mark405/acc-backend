@@ -24,7 +24,7 @@ public class EmployeeAdvanceController {
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public EmployeeAdvanceResponse createAdvance(@RequestBody @Valid CreateAdvanceRequest request) {
+    public EmployeeAdvanceResponse createAdvance(@RequestBody @Valid CreateAdvanceRequest request) throws IllegalAccessException {
         EmployeeAdvance advance = service.create(request);
         return mapper.toDto(advance);
     }
@@ -40,7 +40,7 @@ public class EmployeeAdvanceController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteAdvance(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteAdvance(@PathVariable("id") Long id) throws IllegalAccessException {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
