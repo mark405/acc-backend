@@ -19,7 +19,6 @@ public class EmployeeAdvance {
     private Long id;
 
     @Column(nullable = false)
-    @NotBlank
     private Instant date;
 
     @Column(nullable = false)

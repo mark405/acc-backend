@@ -64,6 +64,18 @@ public class EmployeeFinanceController {
                                                         @RequestParam(required = false, value = "size") int size) {
         Page<EmployeeFinance> finances = service.findAll(employeeId, sortBy, direction, page, size);
 
+        if (!finances.hasContent()) {
+            return finances.map(f -> new EmployeeFinanceResponse(
+                    f.getId(),
+                    f.getStartDate(),
+                    f.getEndDate(),
+                    f.getIncomeQFD(),
+                    f.getPaidRef(),
+                    f.getPercentQFD(),
+                    Collections.emptyList()
+            ));
+        }
+
         LocalDate minStartDate = finances.stream()
                 .map(EmployeeFinance::getStartDate)
                 .min(LocalDate::compareTo)
