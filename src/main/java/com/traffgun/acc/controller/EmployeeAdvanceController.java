@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,12 +23,14 @@ public class EmployeeAdvanceController {
     private final EmployeeAdvanceMapper mapper;
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeAdvanceResponse createAdvance(@RequestBody @Valid CreateAdvanceRequest request) {
         EmployeeAdvance advance = service.create(request);
         return mapper.toDto(advance);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeAdvanceResponse updateAdvance(@PathVariable("id") Long id, @RequestBody @Valid UpdateAdvanceRequest request) {
         EmployeeAdvance advance = service.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         EmployeeAdvance updatedAdvance = service.update(advance, request);
@@ -35,6 +38,7 @@ public class EmployeeAdvanceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteAdvance(@PathVariable("id") Long id) {
         service.deleteById(id);

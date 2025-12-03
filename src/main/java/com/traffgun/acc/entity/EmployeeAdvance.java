@@ -1,7 +1,6 @@
 package com.traffgun.acc.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;

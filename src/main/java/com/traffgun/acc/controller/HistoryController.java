@@ -6,6 +6,7 @@ import com.traffgun.acc.model.history.HistoryType;
 import com.traffgun.acc.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ public class HistoryController {
     private final HistoryMapper historyMapper;
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<HistoryResponse> getAllHistories(@RequestParam(required = false, value = "username") String username,
                                                  @RequestParam(required = false, value = "type") HistoryType type,
                                                  @RequestParam(required = false, value = "sort_by") String sortBy,

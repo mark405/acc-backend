@@ -1,6 +1,7 @@
 package com.traffgun.acc.service;
 
 import com.traffgun.acc.entity.Employee;
+import com.traffgun.acc.entity.User;
 import com.traffgun.acc.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public Page<Employee> findAll(String nameOrComment, String sortBy, String direction, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -32,5 +34,10 @@ public class EmployeeService {
         } else {
             return employeeRepository.findByNameContainingIgnoreCaseOrCommentContainingIgnoreCase(nameOrComment, nameOrComment, pageable);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Employee findByUser(User user) {
+        return employeeRepository.findByUser(user);
     }
 }

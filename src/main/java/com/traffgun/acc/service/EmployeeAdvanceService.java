@@ -31,7 +31,9 @@ public class EmployeeAdvanceService {
 
     @Transactional
     public EmployeeAdvance create(CreateAdvanceRequest request) {
-        Employee employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new EntityNotFoundException(request.getEmployeeId()));
+        Employee employee = employeeRepository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException(request.getEmployeeId()));
+
         return repository.save(EmployeeAdvance.builder()
                 .employee(employee)
                 .date(request.getDate())
@@ -53,12 +55,15 @@ public class EmployeeAdvanceService {
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeAdvance> findAllByDates(LocalDate startDate, LocalDate endDate) {
+    public List<EmployeeAdvance> findAllByDates(Long employeeId, LocalDate startDate, LocalDate endDate) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException(employeeId));
+
         ZoneId zone = ZoneId.of("Europe/Kyiv");
 
         Instant startInstant = startDate.atStartOfDay(zone).toInstant();
         Instant endInstant = endDate.plusDays(1).atStartOfDay(zone).toInstant();
 
-        return repository.findAllByDateBetween(startInstant, endInstant);
+        return repository.findAllByEmployeeAndDateBetween(employee, startInstant, endInstant);
     }
 }

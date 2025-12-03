@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -36,20 +37,22 @@ public class EmployeeFinanceController {
     private final EmployeeAdvanceMapper advanceMapper;
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeFinanceResponse createFinance(@RequestBody @Valid CreateFinanceRequest request) {
         EmployeeFinance finance = service.create(request);
         return mapper.toDto(finance, Collections.emptyList());
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeFinanceResponse updateFinance(@PathVariable("id") Long id, @RequestBody @Valid UpdateFinanceRequest request) {
         EmployeeFinance finance = service.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         EmployeeFinance updatedFinance = service.update(finance, request);
-        List<EmployeeAdvance> advances = advanceService.findAllByDates(updatedFinance.getStartDate(), updatedFinance.getEndDate());
-        return mapper.toDto(updatedFinance, advances.stream().map(advanceMapper::toDto).toList());
+        return mapper.toDto(updatedFinance, Collections.emptyList());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteFinance(@PathVariable("id") Long id) {
         service.deleteById(id);
@@ -85,7 +88,7 @@ public class EmployeeFinanceController {
                 .max(LocalDate::compareTo)
                 .orElseThrow();
 
-        List<EmployeeAdvance> allAdvances = advanceService.findAllByDates(minStartDate, maxEndDate);
+        List<EmployeeAdvance> allAdvances = advanceService.findAllByDates(employeeId, minStartDate, maxEndDate);
 
         ZoneId zone = ZoneId.of("Europe/Kyiv");
 
