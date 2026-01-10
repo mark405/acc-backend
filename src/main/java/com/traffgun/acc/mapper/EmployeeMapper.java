@@ -13,7 +13,8 @@ public class EmployeeMapper {
                 employee.getId(),
                 employee.getName(),
                 employee.getComment(),
-                employee.getRating()
+                employee.getRating(),
+                employee.getQfd()
         );
     }
 }

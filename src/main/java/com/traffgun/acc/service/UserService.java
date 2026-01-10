@@ -129,4 +129,12 @@ public class UserService implements UserDetailsService {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
+
+    @Transactional
+    public void makeAdmin(User user) {
+        user.setRole(Role.ADMIN);
+        userRepository.save(user);
+
+        employeeRepository.deleteByUser(user);
+    }
 }

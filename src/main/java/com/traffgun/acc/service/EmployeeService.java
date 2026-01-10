@@ -1,5 +1,6 @@
 package com.traffgun.acc.service;
 
+import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.repository.EmployeeRepository;
@@ -39,5 +40,11 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public Employee findByUser(User user) {
         return employeeRepository.findByUser(user);
+    }
+
+    @Transactional
+    public Employee update(Employee employee, UpdateEmployeeRequest request) {
+        employee.setQfd(request.getQfd());
+        return employeeRepository.save(employee);
     }
 }

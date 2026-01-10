@@ -24,7 +24,7 @@ public class Employee {
 
     private Double rating;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
@@ -32,4 +32,6 @@ public class Employee {
             foreignKey = @ForeignKey(name = "fk_employee_user", foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE")
     )
     private User user;
+
+    private Double qfd;
 }

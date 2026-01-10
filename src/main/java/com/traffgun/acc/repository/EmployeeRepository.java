@@ -11,4 +11,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Page<Employee> findByNameContainingIgnoreCaseOrCommentContainingIgnoreCase(String name, String comment, Pageable pageable);
 
     Employee findByUser(User user);
+
+    void deleteByUser(User user);
 }

@@ -10,4 +10,5 @@ public class EmployeeResponse {
     private String name;
     private String comment;
     private Double rating;
+    private Double qfd;
 }

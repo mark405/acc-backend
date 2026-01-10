@@ -1,6 +1,8 @@
 package com.traffgun.acc.controller;
 
 import com.traffgun.acc.dto.employee.EmployeeResponse;
+import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
+import com.traffgun.acc.entity.Category;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -33,6 +35,14 @@ public class EmployeeController {
     public EmployeeResponse getEmployeeById(@PathVariable Long id) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return employeeMapper.toDto(employee);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public EmployeeResponse updateEmployee(@PathVariable Long id, @RequestBody UpdateEmployeeRequest request) {
+        Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        Employee updatedEmployee = employeeService.update(employee, request);
+        return employeeMapper.toDto(updatedEmployee);
     }
 
     @GetMapping
