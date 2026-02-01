@@ -14,6 +14,7 @@ import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -137,5 +139,10 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
 
         employeeRepository.deleteByUser(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findAllByIds(@NotEmpty List<Long> assignedTo) {
+        return userRepository.findAllById(assignedTo);
     }
 }
