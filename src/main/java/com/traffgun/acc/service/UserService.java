@@ -127,6 +127,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deleteById(Long id) {
+        historyRepository.deleteByUser_Id(id);
         userRepository.deleteById(id);
     }
 

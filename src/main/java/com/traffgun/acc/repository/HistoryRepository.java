@@ -17,4 +17,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     Page<History> findByUserInAndType(List<User> users, HistoryType type, Pageable pageable);
 
     Page<History> findByUserIn(List<User> users, Pageable pageable);
+
+    void deleteByUser_Id(Long userId);
 }
