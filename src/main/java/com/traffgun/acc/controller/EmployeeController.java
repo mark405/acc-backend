@@ -31,7 +31,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeResponse getEmployeeById(@PathVariable Long id) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return employeeMapper.toDto(employee);
