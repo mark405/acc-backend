@@ -53,7 +53,7 @@ public class TicketController {
     }
 
     @PostMapping("/{id}/comments")
-    public TicketCommentResponse addComment(@PathVariable Long id, @ModelAttribute CreateCommentRequest request) {
+    public TicketCommentResponse addComment(@PathVariable Long id, @ModelAttribute CreateCommentRequest request) throws IllegalAccessException {
         return ticketCommentMapper.toDto(ticketService.addComment(id, request));
     }
 

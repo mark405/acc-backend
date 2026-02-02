@@ -152,8 +152,8 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketComment addComment(Long ticketId, CreateCommentRequest request) {
-        Ticket ticket = ticketRepository.findById(ticketId)
+    public TicketComment addComment(Long ticketId, CreateCommentRequest request) throws IllegalAccessException {
+        Ticket ticket = repository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         TicketComment comment = TicketComment.builder()
@@ -177,27 +177,26 @@ public class TicketService {
                 files.add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
                         .fileUrl(targetPath.toString())
-                        .comment(comment)
                         .build());
             }
             comment.setAttachments(files);
         }
 
-        return commentRepository.save(comment);
+        return ticketCommentRepository.save(comment);
     }
 
     @Transactional
     public TicketComment editComment(Long commentId, UpdateCommentRequest request) {
-        TicketComment comment = commentRepository.findById(commentId)
+        TicketComment comment = ticketCommentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
         if (request.getText() != null) comment.setText(request.getText());
 
         // delete attachments
-        if (request.getFileIdsToDelete() != null) {
+        if (request.getAttachmentsToDelete() != null) {
             List<TicketFile> remainingFiles = new ArrayList<>();
             for (TicketFile file : comment.getAttachments()) {
-                if (request.getFileIdsToDelete().contains(file.getId())) {
+                if (request.getAttachmentsToDelete().contains(file.getId())) {
                     try { Files.deleteIfExists(Paths.get(file.getFileUrl())); } catch (Exception ignored) {}
                 } else {
                     remainingFiles.add(file);
@@ -207,11 +206,11 @@ public class TicketService {
         }
 
         // add new attachments
-        if (request.getNewAttachments() != null && !request.getNewAttachments().isEmpty()) {
+        if (request.getAttachmentsToAdd() != null && !request.getAttachmentsToAdd().isEmpty()) {
             Path uploadDir = Paths.get("ticket_files");
             try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
 
-            for (var file : request.getNewAttachments()) {
+            for (var file : request.getAttachmentsToAdd()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path targetPath = uploadDir.resolve(fileName);
                 try { Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING); }
@@ -220,12 +219,11 @@ public class TicketService {
                 comment.getAttachments().add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
                         .fileUrl(targetPath.toString())
-                        .comment(comment)
                         .build());
             }
         }
 
-        return commentRepository.save(comment);
+        return ticketCommentRepository.save(comment);
     }
 
     @Transactional
