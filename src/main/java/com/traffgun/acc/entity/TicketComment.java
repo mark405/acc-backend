@@ -37,7 +37,7 @@ public class TicketComment {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketFile> attachments = new ArrayList<>();
 
     @Column(nullable = false)

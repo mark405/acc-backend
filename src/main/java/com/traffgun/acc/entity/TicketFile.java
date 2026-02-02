@@ -16,12 +16,17 @@ public class TicketFile {
     private Long id;
 
     @Column(nullable = false)
-    private String fileName; // имя файла
+    private String fileName;
 
     @Column(nullable = false)
-    private String fileUrl; // или путь/URL к файлу
+    private String fileUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private TicketComment comment;
+
 }

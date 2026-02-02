@@ -47,7 +47,12 @@ public class Ticket {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @OneToMany(mappedBy = "assigned_to", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "ticket_assignments",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> assignedTo = new ArrayList<>();
 
     @Column(nullable = false)
