@@ -59,12 +59,9 @@ public class UserController {
     @PutMapping("/make-admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> makeAdmin(@PathVariable Long id) {
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, Role role) {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-        if (user.getRole() == Role.ADMIN) {
-            throw new UserIsAdminException();
-        }
-        userService.makeAdmin(user);
+        userService.changeRole(user, role);
         return ResponseEntity.noContent().build();
     }
 

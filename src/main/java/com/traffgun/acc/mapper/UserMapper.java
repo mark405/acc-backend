@@ -13,8 +13,8 @@ public class UserMapper {
     public User toEntity(RegisterRequest request) {
         return User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword()) // will be encoded in UserService
-                .role(Role.USER)
+                .password(request.getPassword())
+                .role(Role.MANAGER)
                 .build();
     }
 

@@ -134,8 +134,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void makeAdmin(User user) {
-        user.setRole(Role.ADMIN);
+    public void changeRole(User user, Role role) {
+        user.setRole(role);
         userRepository.save(user);
 
         employeeRepository.deleteByUser(user);
