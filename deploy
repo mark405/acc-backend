@@ -1,2 +1,2 @@
-scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\target\acc.jar root@104.248.37.20:/root/backend/
-scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\src\main\resources\application.properties root@104.248.37.20:/root/backend/
+scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\target\acc.jar root@146.190.49.164:/root/
+scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\src\main\resources\application.properties root@146.190.49.164:/root/

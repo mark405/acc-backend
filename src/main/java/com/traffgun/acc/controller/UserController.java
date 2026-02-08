@@ -55,7 +55,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/make-admin/{id}")
+    @PutMapping("/change-role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> changeRole(@PathVariable Long id, Role role) {
