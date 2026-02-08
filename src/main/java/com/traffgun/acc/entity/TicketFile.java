@@ -22,7 +22,7 @@ public class TicketFile {
     private String fileUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_id", nullable = false)
+    @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)

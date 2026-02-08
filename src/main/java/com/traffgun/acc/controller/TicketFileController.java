@@ -15,10 +15,24 @@ import java.nio.file.Paths;
 public class TicketFileController {
 
     private final Path baseDir = Paths.get("ticket_files");
+    private final Path commentsDir = Paths.get("ticket_files/comments");
 
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) throws IOException {
         Path file = baseDir.resolve(filename).normalize();
+        Resource resource = new UrlResource(file.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    @GetMapping("/comments/{filename:.+}")
+    public ResponseEntity<Resource> getCommentsFile(@PathVariable String filename) throws IOException {
+        Path file = commentsDir.resolve(filename).normalize();
         Resource resource = new UrlResource(file.toUri());
         if (!resource.exists() || !resource.isReadable()) {
             return ResponseEntity.notFound().build();

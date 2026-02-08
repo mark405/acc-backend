@@ -5,6 +5,8 @@ import com.traffgun.acc.entity.TicketComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 @RequiredArgsConstructor
 public class TicketCommentMapper {
@@ -15,7 +17,7 @@ public class TicketCommentMapper {
         return new TicketCommentResponse(
                 ticketComment.getId(),
                 ticketComment.getText(),
-                ticketComment.getAttachments().stream().map(ticketFileMapper::toDto).toList(),
+                ticketComment.getAttachments() != null ? ticketComment.getAttachments().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
                 userMapper.toUserDto(ticketComment.getCreatedBy()),
                 ticketComment.getCreatedAt()
         );

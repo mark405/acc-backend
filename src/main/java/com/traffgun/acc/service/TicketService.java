@@ -172,7 +172,7 @@ public class TicketService {
 
         // handle attachments
         if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
-            Path uploadDir = Paths.get("ticket_files");
+            Path uploadDir = Paths.get("ticket_files/comments");
             try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
 
             List<TicketFile> files = new ArrayList<>();
@@ -184,7 +184,8 @@ public class TicketService {
 
                 files.add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
-                        .fileUrl(targetPath.toString())
+                        .fileUrl("ticket-files/comments/" + fileName)
+                        .comment(comment)
                         .build());
             }
             comment.setAttachments(files);
