@@ -7,7 +7,8 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @NamedEntityGraph(
         name = "Ticket.full",
@@ -29,7 +30,7 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
     @Enumerated(EnumType.STRING)
@@ -41,7 +42,7 @@ public class Ticket {
     private TicketStatus status = TicketStatus.OPENED;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketFile> files = new ArrayList<>();
+    private Set<TicketFile> files = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
@@ -53,8 +54,14 @@ public class Ticket {
             joinColumns = @JoinColumn(name = "ticket_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> assignedTo = new ArrayList<>();
+    private Set<User> assignedTo = new HashSet<>();
 
-    @Column(nullable = false)
-    private Instant createdAt = Instant.now();
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+    }
+
 }

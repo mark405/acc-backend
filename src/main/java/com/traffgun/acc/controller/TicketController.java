@@ -2,16 +2,16 @@ package com.traffgun.acc.controller;
 
 import com.traffgun.acc.dto.CreateCommentRequest;
 import com.traffgun.acc.dto.UpdateCommentRequest;
-import com.traffgun.acc.dto.ticket.CreateTicketRequest;
-import com.traffgun.acc.dto.ticket.TicketCommentResponse;
-import com.traffgun.acc.dto.ticket.TicketFilter;
-import com.traffgun.acc.dto.ticket.TicketResponse;
+import com.traffgun.acc.dto.ticket.*;
 import com.traffgun.acc.entity.Ticket;
+import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.mapper.TicketCommentMapper;
 import com.traffgun.acc.mapper.TicketMapper;
+import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,9 +28,9 @@ public class TicketController {
     private final TicketMapper ticketMapper;
     private final TicketCommentMapper ticketCommentMapper;
 
-    @GetMapping
-    public List<TicketResponse> getAllTickets(@Valid @RequestBody TicketFilter filter) {
-        return ticketService.findAll(filter).stream().map(ticketMapper::toDto).toList();
+    @PostMapping
+    public Page<TicketResponse> getAllTickets(@Valid @RequestBody TicketFilter filter) {
+        return ticketService.findAll(filter).map(ticketMapper::toDto);
     }
 
     @GetMapping("/{id}/comments")
@@ -38,11 +38,26 @@ public class TicketController {
         return ticketService.findAllComments(id).stream().map(ticketCommentMapper::toDto).toList();
     }
 
-    @PostMapping()
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
-    public TicketResponse createTicket(@RequestBody @Valid CreateTicketRequest request) throws IllegalAccessException {
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN')")
+    public TicketResponse createTicket(@ModelAttribute @Valid CreateTicketRequest request) throws IllegalAccessException {
         Ticket createdTicket = ticketService.create(request);
         return ticketMapper.toDto(createdTicket);
+    }
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN')")
+    public TicketResponse updateTicket(@PathVariable("id") Long id, @ModelAttribute @Valid UpdateTicketRequest request) {
+        Ticket ticket = ticketService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        Ticket createdTicket = ticketService.update(ticket, request);
+        return ticketMapper.toDto(createdTicket);
+    }
+
+    @PutMapping("/status/{id}")
+    @PreAuthorize("hasRole('TECH_MANAGER') || hasRole('OFFERS_MANAGER')")
+    public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestBody UpdateStatusRequest status) {
+        ticketService.changeStatus(id, status.getStatus());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

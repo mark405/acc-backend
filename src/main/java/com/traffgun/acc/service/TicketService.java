@@ -51,7 +51,7 @@ public class TicketService {
                 .type(request.getType())
                 .status(TicketStatus.OPENED)
                 .createdBy(userService.getCurrentUser())
-                .assignedTo(users)
+                .assignedTo(new HashSet<>(users))
                 .build();
 
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
@@ -82,10 +82,13 @@ public class TicketService {
             // Create TicketFile entity
             TicketFile ticketFile = TicketFile.builder()
                     .fileName(file.getOriginalFilename())
-                    .fileUrl(targetPath.toString())
+                    .fileUrl("ticket-files/" + fileName)
                     .ticket(ticket)
                     .build();
 
+            if (ticket.getFiles() == null) {
+                ticket.setFiles(new HashSet<>());
+            }
             ticket.getFiles().add(ticketFile);
         }
     }
@@ -95,9 +98,13 @@ public class TicketService {
         ticket.setText(request.getText());
         ticket.setStatus(request.getStatus());
         List<User> users = userService.findAllByIds(request.getAssignedTo());
-        ticket.setAssignedTo(users);
-        removeFiles(ticket, request.getFilesToDelete());
-        addFiles(request.getFilesToAdd(), ticket);
+        ticket.setAssignedTo(new HashSet<>(users));
+        if (request.getFilesToDelete() != null) {
+            removeFiles(ticket, request.getFilesToDelete());
+        }
+        if (request.getFilesToAdd() != null) {
+            addFiles(request.getFilesToAdd(), ticket);
+        }
 
         return repository.save(ticket);
     }
@@ -117,7 +124,8 @@ public class TicketService {
             }
         }
 
-        ticket.setFiles(remainingFiles);
+        ticket.getFiles().clear();
+        ticket.getFiles().addAll(remainingFiles);
     }
 
     @Transactional(readOnly = true)
@@ -241,5 +249,12 @@ public class TicketService {
     @Transactional(readOnly = true)
     public List<TicketComment> findAllComments(Long id) {
         return ticketCommentRepository.findAllByTicketIdOrderByIdDesc(id);
+    }
+
+    @Transactional
+    public void changeStatus(Long id, TicketStatus status) {
+        Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        ticket.setStatus(status);
+        repository.save(ticket);
     }
 }

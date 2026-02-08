@@ -31,7 +31,6 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> getAllUsers(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) Role role,
