@@ -1,6 +1,7 @@
 package com.traffgun.acc.controller;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
+import com.traffgun.acc.dto.user.ChangeRoleRequest;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -58,9 +59,9 @@ public class UserController {
     @PutMapping("/change-role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> changeRole(@PathVariable Long id, Role role) {
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-        userService.changeRole(user, role);
+        userService.changeRole(user, request.getRole());
         return ResponseEntity.noContent().build();
     }
 
