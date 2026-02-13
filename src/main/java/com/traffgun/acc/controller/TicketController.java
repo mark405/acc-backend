@@ -33,6 +33,14 @@ public class TicketController {
         return ticketService.findAll(filter).map(ticketMapper::toDto);
     }
 
+    @GetMapping("/{id}")
+    public TicketResponse getTicketById(@PathVariable("id") Long id) {
+        Ticket ticket = ticketService.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+
+        return ticketMapper.toDto(ticket);
+    }
+
     @GetMapping("/{id}/comments")
     public List<TicketCommentResponse> getCommentsByTicketId(@PathVariable("id") Long id) {
         return ticketService.findAllComments(id).stream().map(ticketCommentMapper::toDto).toList();

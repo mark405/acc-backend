@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface TicketCommentRepository extends JpaRepository<TicketComment, Long> {
     void deleteAllByTicket(Ticket ticket);
+
     @EntityGraph(value = "TicketComment.attachmentsAndCreator")
     List<TicketComment> findAllByTicketIdOrderByIdDesc(Long ticketId);
+
+    List<TicketComment> findAllByTicket(Ticket ticket);
 }

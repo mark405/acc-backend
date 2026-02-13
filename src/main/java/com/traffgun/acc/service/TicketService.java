@@ -10,7 +10,9 @@ import com.traffgun.acc.entity.TicketComment;
 import com.traffgun.acc.entity.TicketFile;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
+import com.traffgun.acc.model.Role;
 import com.traffgun.acc.model.TicketStatus;
+import com.traffgun.acc.model.TicketType;
 import com.traffgun.acc.repository.TicketCommentRepository;
 import com.traffgun.acc.repository.TicketFileRepository;
 import com.traffgun.acc.repository.TicketRepository;
@@ -139,6 +141,12 @@ public class TicketService {
         ticket.getFiles().forEach(f -> {
             try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
         });
+        ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> {
+            comment.getAttachments().forEach(f -> {
+                try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+            });
+        });
+        ticketCommentRepository.deleteAllByTicket(ticket);
 
         repository.deleteById(id);
     }
@@ -191,7 +199,16 @@ public class TicketService {
             comment.setAttachments(files);
         }
 
-        return ticketCommentRepository.save(comment);
+        var saved = ticketCommentRepository.save(comment);
+
+        if (ticket.getType() == TicketType.TECH_GOAL
+                && ticket.getStatus() == TicketStatus.CLOSED
+                && userService.getCurrentUser().getRole() == Role.MANAGER) {
+            ticket.setStatus(TicketStatus.OPENED);
+            repository.save(ticket);
+        }
+
+        return saved;
     }
 
     @Transactional
@@ -203,15 +220,14 @@ public class TicketService {
 
         // delete attachments
         if (request.getAttachmentsToDelete() != null) {
-            List<TicketFile> remainingFiles = new ArrayList<>();
-            for (TicketFile file : comment.getAttachments()) {
+            var iterator = comment.getAttachments().iterator();
+            while (iterator.hasNext()) {
+                TicketFile file = iterator.next();
                 if (request.getAttachmentsToDelete().contains(file.getId())) {
                     try { Files.deleteIfExists(Paths.get(file.getFileUrl())); } catch (Exception ignored) {}
-                } else {
-                    remainingFiles.add(file);
+                    iterator.remove();
                 }
             }
-            comment.setAttachments(remainingFiles);
         }
 
         // add new attachments
@@ -228,6 +244,7 @@ public class TicketService {
                 comment.getAttachments().add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
                         .fileUrl(targetPath.toString())
+                        .comment(comment)
                         .build());
             }
         }
