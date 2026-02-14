@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +14,7 @@ import java.util.Set;
         attributeNodes = {
                 @NamedAttributeNode("files"),
                 @NamedAttributeNode("createdBy"),
+                @NamedAttributeNode("operatedBy"),
                 @NamedAttributeNode("assignedTo")
         }
 )
@@ -43,6 +43,10 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TicketFile> files = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "operated_by")
+    private User operatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)

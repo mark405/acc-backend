@@ -63,7 +63,7 @@ public class TicketController {
 
     @PutMapping("/status/{id}")
     @PreAuthorize("hasRole('TECH_MANAGER') || hasRole('OFFERS_MANAGER')")
-    public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestBody UpdateStatusRequest status) {
+    public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestBody UpdateStatusRequest status) throws IllegalAccessException {
         ticketService.changeStatus(id, status.getStatus());
         return ResponseEntity.noContent().build();
     }

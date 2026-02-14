@@ -270,9 +270,16 @@ public class TicketService {
     }
 
     @Transactional
-    public void changeStatus(Long id, TicketStatus status) {
+    public void changeStatus(Long id, TicketStatus status) throws IllegalAccessException {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         ticket.setStatus(status);
+        if (ticket.getType() == TicketType.TECH_GOAL) {
+            if (status == TicketStatus.IN_PROGRESS) {
+                ticket.setOperatedBy(userService.getCurrentUser());
+            } else {
+                ticket.setOperatedBy(null);
+            }
+        }
         repository.save(ticket);
     }
 }

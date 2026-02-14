@@ -21,6 +21,7 @@ public class TicketResponse {
     private TicketStatus status;
     private List<UserResponse> assignedTo;
     private List<TicketFileResponse> files;
+    private UserResponse operatedBy;
     private UserResponse createdBy;
     private Instant createdAt;
 }

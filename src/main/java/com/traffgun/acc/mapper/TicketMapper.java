@@ -22,6 +22,7 @@ public class TicketMapper {
                 ticket.getAssignedTo().stream().map(userMapper::toUserDto).toList(),
                 ticket.getFiles() != null ? ticket.getFiles().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
                 userMapper.toUserDto(ticket.getCreatedBy()),
+                userMapper.toUserDto(ticket.getOperatedBy()),
                 ticket.getCreatedAt()
         );
     }
