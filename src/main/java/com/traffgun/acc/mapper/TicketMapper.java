@@ -21,8 +21,8 @@ public class TicketMapper {
                 ticket.getStatus(),
                 ticket.getAssignedTo().stream().map(userMapper::toUserDto).toList(),
                 ticket.getFiles() != null ? ticket.getFiles().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
+                ticket.getOperatedBy() == null ? null: userMapper.toUserDto(ticket.getOperatedBy()),
                 userMapper.toUserDto(ticket.getCreatedBy()),
-                userMapper.toUserDto(ticket.getOperatedBy()),
                 ticket.getCreatedAt()
         );
     }
