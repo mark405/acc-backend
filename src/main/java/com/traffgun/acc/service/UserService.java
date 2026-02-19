@@ -138,7 +138,9 @@ public class UserService implements UserDetailsService {
         user.setRole(role);
         userRepository.save(user);
 
-        employeeRepository.deleteByUser(user);
+        if (role == Role.ADMIN) {
+            employeeRepository.deleteByUser(user);
+        }
     }
 
     @Transactional(readOnly = true)

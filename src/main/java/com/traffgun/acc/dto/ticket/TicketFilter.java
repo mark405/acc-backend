@@ -4,9 +4,11 @@ import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TicketFilter {
-    private TicketType type;
+    private List<TicketType> types;
     private TicketStatus status;
     private Long createdBy;
     private Long assignedTo;

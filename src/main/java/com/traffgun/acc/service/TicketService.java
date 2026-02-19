@@ -156,7 +156,7 @@ public class TicketService {
         Specification<Ticket> spec = (root, query, cb) -> cb.conjunction();
 
         spec = spec
-                .and(TicketSpecification.hasType(filter.getType()))
+                .and(TicketSpecification.hasTypes(filter.getTypes()))
                 .and(TicketSpecification.hasStatus(filter.getStatus()))
                 .and(TicketSpecification.hasCreatedBy(filter.getCreatedBy()))
                 .and(TicketSpecification.hasAssignedTo(filter.getAssignedTo()));

@@ -5,16 +5,35 @@ import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
 import org.springframework.data.jpa.domain.Specification;
 
-public class TicketSpecification {
+import java.util.List;
 
-    public static Specification<Ticket> hasType(TicketType type) {
-        return (root, query, cb) ->
-                type == null ? null : cb.equal(root.get("type"), type);
+public class TicketSpecification {
+    public static Specification<Ticket> hasTypes(List<TicketType> types) {
+        return (root, query, cb) -> {
+            if (types == null || types.isEmpty()) {
+                return null;
+            }
+            return root.get("type").in(types);
+        };
     }
 
+
     public static Specification<Ticket> hasStatus(TicketStatus status) {
-        return (root, query, cb) ->
-                status == null ? null : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> {
+            if (status == null) {
+                return null;
+            }
+
+            if (status == TicketStatus.OPENED) {
+                return root.get("status").in(TicketStatus.OPENED, TicketStatus.IN_PROGRESS);
+            }
+
+            if (status == TicketStatus.CLOSED) {
+                return cb.equal(root.get("status"), TicketStatus.CLOSED);
+            }
+
+            return null;
+        };
     }
 
     public static Specification<Ticket> hasCreatedBy(Long createdBy) {
