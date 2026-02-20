@@ -66,7 +66,9 @@ public class TicketService {
 
         // Send message to bot
         if (savedTicket.getType() == TicketType.TECH_GOAL) {
-            ticketBot.notifyNewTicket(savedTicket);
+            ticketBot.notifyNewTechTicket(savedTicket);
+        } else {
+            ticketBot.notifyNewOffersTicket(savedTicket);
         }
 
         return savedTicket;
