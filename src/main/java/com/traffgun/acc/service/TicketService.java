@@ -293,6 +293,8 @@ public class TicketService {
                 ticket.setOperatedBy(null);
             }
         }
-        repository.save(ticket);
+        var saved = repository.save(ticket);
+
+        ticketBot.notifyNewStatus(saved, userService.getCurrentUser().getUsername());
     }
 }

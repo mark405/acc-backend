@@ -8,6 +8,7 @@ import com.traffgun.acc.entity.Ticket;
 import com.traffgun.acc.entity.TicketComment;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.service.TelegramUserService;
 import jakarta.annotation.PostConstruct;
@@ -135,6 +136,13 @@ public class TicketBot {
             String message = "💬 Новий коментар до Тікету #" + ticketId + "\n" +
                     "Створив: " + escapeMarkdown(creator) + "\n\n" +
                     "Коментар:\n" + escapeMarkdown(comment.getText());
+            sendMessage(user.getChatId(), message);
+        });
+    }
+
+    public void notifyNewStatus(Ticket ticket, String username) {
+        telegramUserService.findByRoleAndManagerId(Role.MANAGER, ticket.getCreatedBy().getId()).forEach(user -> {
+            String message = username + " змінив статус Тікету #" + ticket.getId() + "на " + ticket.getStatus() + "\n";
             sendMessage(user.getChatId(), message);
         });
     }
