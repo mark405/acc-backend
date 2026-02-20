@@ -95,7 +95,7 @@ public class TicketBot {
                     waitingForLogin.put(chatId, Role.MANAGER);
                     sendMessage(chatId, "Please enter your manager login:");
                 } else {
-                    sendMessage(chatId, "Send /tech_manager or /manager to choose your notifications.");
+                    sendMessage(chatId, "Send /tech_manager or /manager or /offers_manager to choose your notifications.");
                 }
             } catch (Exception e) {
                 log.error("Error handling update: {}", e.getMessage());
