@@ -142,7 +142,7 @@ public class TicketBot {
 
     public void notifyNewStatus(Ticket ticket, String username) {
         telegramUserService.findByRoleAndManagerId(Role.MANAGER, ticket.getCreatedBy().getId()).forEach(user -> {
-            String message = username + " змінив статус Тікету #" + ticket.getId() + "на " + ticket.getStatus() + "\n";
+            String message = username + " змінив статус Тікету #" + ticket.getId() + " на " + ticket.getStatus() + "\n";
             sendMessage(user.getChatId(), message);
         });
     }
