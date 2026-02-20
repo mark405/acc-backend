@@ -137,10 +137,6 @@ public class UserService implements UserDetailsService {
     public void changeRole(User user, Role role) {
         user.setRole(role);
         userRepository.save(user);
-
-        if (role == Role.ADMIN) {
-            employeeRepository.deleteByUser(user);
-        }
     }
 
     @Transactional(readOnly = true)
