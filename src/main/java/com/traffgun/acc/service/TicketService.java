@@ -14,10 +14,9 @@ import com.traffgun.acc.model.Role;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
 import com.traffgun.acc.repository.TicketCommentRepository;
-import com.traffgun.acc.repository.TicketFileRepository;
 import com.traffgun.acc.repository.TicketRepository;
-import com.traffgun.acc.specification.OperationSpecification;
 import com.traffgun.acc.specification.TicketSpecification;
+import com.traffgun.acc.telegram.TicketBot;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,15 +33,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TicketService {
     private final TicketRepository repository;
-    private final TicketFileRepository ticketFileRepository;
     private final TicketCommentRepository ticketCommentRepository;
     private final UserService userService;
+    private final TicketBot ticketBot;
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
@@ -60,7 +62,14 @@ public class TicketService {
             addFiles(request.getFiles(), ticket);
         }
 
-        return repository.save(ticket);
+        Ticket savedTicket = repository.save(ticket);
+
+        // Send message to bot
+        if (savedTicket.getType() == TicketType.TECH_GOAL) {
+            ticketBot.notifyNewTicket(savedTicket);
+        }
+
+        return savedTicket;
     }
 
     private void addFiles(List<MultipartFile> filesToAdd, Ticket ticket) {
@@ -207,6 +216,8 @@ public class TicketService {
             ticket.setStatus(TicketStatus.OPENED);
             repository.save(ticket);
         }
+
+        ticketBot.notifyNewComment(ticketId, ticket.getCreatedBy().getId(), saved);
 
         return saved;
     }
