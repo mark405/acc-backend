@@ -22,7 +22,8 @@ public class UserMapper {
         return new RegisterResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getRole()
+                user.getRole(),
+                user.getTotpEnabled()
         );
     }
 
@@ -32,7 +33,8 @@ public class UserMapper {
                 user.getUsername(),
                 user.getRole(),
                 user.getCreatedAt(),
-                user.getModifiedAt()
+                user.getModifiedAt(),
+                user.getTotpEnabled()
         );
     }
 }

@@ -43,4 +43,10 @@ public class User {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    @Column(name = "totp_secret")
+    private String totpSecret;
+
+    @Column(name = "totp_enabled")
+    private Boolean totpEnabled = false;
 }

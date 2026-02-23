@@ -5,10 +5,13 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -31,50 +34,59 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateAccessToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
-                .claim("type", "access")
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+    public String generateAccessToken(String username, boolean totpVerified) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "access");
+        claims.put("totpVerified", totpVerified);
+        return createToken(claims, username, accessExpiration);
     }
 
+    // ---- REFRESH TOKEN ----
     public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        claims.put("totpVerified", true); // refresh tokens always assume verified
+        return createToken(claims, username, refreshExpiration);
+    }
+
+    // ---- GENERIC TOKEN CREATION ----
+    private String createToken(Map<String, Object> claims, String subject, long expiration) {
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-                .claim("type", "refresh")
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ---- PARSING / VALIDATION ----
     public String extractUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
     public boolean validateToken(String token, String expectedType) {
         try {
-            var claims = Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return !isTokenExpired(token) &&
-                    expectedType.equals(claims.get("type", String.class));
+            Claims claims = extractAllClaims(token);
+            return !isTokenExpired(token)
+                    && expectedType.equals(claims.get("type", String.class));
         } catch (Exception e) {
             return false;
         }
     }
 
     private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
+
+    public boolean isTotpVerified(String token) {
+        Object claim = extractAllClaims(token).get("totpVerified");
+        return claim != null && (Boolean) claim;
+    }
+
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
+                .getBody();
     }
 }

@@ -160,4 +160,19 @@ public class UserService implements UserDetailsService {
     public List<User> findAllByIds(@NotEmpty List<Long> assignedTo) {
         return userRepository.findAllById(assignedTo);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<User>  findByUsername(String username) {
+        return userRepository.findByUsernameAndActiveIsTrue(username);
+    }
+
+    @Transactional
+    public void updateTotp(Long id, boolean totpEnabled, String secret) {
+        User user = userRepository.findByIdAndActiveIsTrue(id).orElseThrow(() -> new EntityNotFoundException(id));
+
+        user.setTotpEnabled(totpEnabled);
+        user.setTotpSecret(secret);
+
+        userRepository.save(user);
+    }
 }

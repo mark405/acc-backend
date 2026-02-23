@@ -10,4 +10,5 @@ public class RegisterResponse {
     private Long id;
     private String username;
     private Role role;
+    private Boolean totpEnabled;
 }

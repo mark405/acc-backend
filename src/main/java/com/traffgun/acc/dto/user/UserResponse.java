@@ -14,4 +14,5 @@ public class UserResponse {
     private Role role;
     private Instant createdAt;
     private Instant modifiedAt;
+    private Boolean totpEnabled;
 }

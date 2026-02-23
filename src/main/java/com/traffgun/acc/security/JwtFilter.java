@@ -44,6 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userService.loadUserByUsername(username);
             if (jwtUtils.validateToken(jwt, "access")) {
+                boolean totpVerified = jwtUtils.isTotpVerified(jwt);
+                var user = userService.findByUsername(username); // returns your entity
+                if (user.orElseThrow().getTotpEnabled() && !totpVerified) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("TOTP required");
+                    return;
+                }
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
