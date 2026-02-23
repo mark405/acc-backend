@@ -40,4 +40,7 @@ public class User {
     @UpdateTimestamp
     @Column(name = "modified_at", nullable = false)
     private Instant modifiedAt;
+
+    @Column(nullable = false)
+    private Boolean active = true;
 }

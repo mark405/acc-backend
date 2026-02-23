@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-    Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameAndActiveIsTrue(String username);
 
-    boolean existsByUsername(String username);
+    Optional<User> findByIdAndActiveIsTrue(Long id);
+
+    boolean existsByUsernameAndActiveIsTrue(String username);
 }

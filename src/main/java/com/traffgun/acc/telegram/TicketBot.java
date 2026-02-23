@@ -66,7 +66,7 @@ public class TicketBot {
                 Role pendingRole = waitingForLogin.get(chatId);
 
                 if (pendingRole != null) {
-                    userRepository.findByUsername(text).ifPresentOrElse(
+                    userRepository.findByUsernameAndActiveIsTrue(text).ifPresentOrElse(
                             manager -> {
                                 if (pendingRole == Role.MANAGER) {
                                     telegramUserService.registerManager(chatId, manager.getUsername());

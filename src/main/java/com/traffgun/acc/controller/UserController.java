@@ -59,7 +59,7 @@ public class UserController {
     @PutMapping("/change-role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) throws IllegalAccessException {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         userService.changeRole(user, request.getRole());
         return ResponseEntity.noContent().build();
@@ -68,11 +68,7 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-        if (user.getRole() == Role.ADMIN) {
-            throw new UserIsAdminException();
-        }
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws IllegalAccessException {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

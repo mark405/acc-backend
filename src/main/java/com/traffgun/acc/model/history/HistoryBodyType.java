@@ -2,7 +2,9 @@ package com.traffgun.acc.model.history;
 
 public enum HistoryBodyType {
     USER_CREATED,
+    USER_DELETED,
     USER_PASSWORD_CHANGED,
+    USER_ROLE_CHANGED,
     OPERATION_CREATED,
     OPERATION_DELETED,
     OPERATION_UPDATED,

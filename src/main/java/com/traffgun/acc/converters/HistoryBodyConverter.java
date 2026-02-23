@@ -31,7 +31,9 @@ public class HistoryBodyConverter implements AttributeConverter<HistoryBody, Str
 
             Class<?> cl = switch (bodyType) {
                 case USER_CREATED -> UserCreatedHistoryBody.class;
+                case USER_DELETED -> UserDeletedHistoryBody.class;
                 case USER_PASSWORD_CHANGED -> UserPasswordChangedHistoryBody.class;
+                case USER_ROLE_CHANGED -> UserRoleChangedHistoryBody.class;
                 case OPERATION_CREATED -> OperationCreatedHistoryBody.class;
                 case OPERATION_DELETED -> OperationDeletedHistoryBody.class;
                 case OPERATION_UPDATED -> OperationUpdatedHistoryBody.class;

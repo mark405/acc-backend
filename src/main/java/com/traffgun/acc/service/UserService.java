@@ -4,12 +4,11 @@ import com.traffgun.acc.dto.user.ChangePasswordRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.User;
+import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
 import com.traffgun.acc.model.Role;
-import com.traffgun.acc.model.history.HistoryType;
-import com.traffgun.acc.model.history.UserCreatedHistoryBody;
-import com.traffgun.acc.model.history.UserPasswordChangedHistoryBody;
+import com.traffgun.acc.model.history.*;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
 import com.traffgun.acc.repository.UserRepository;
@@ -45,7 +44,7 @@ public class UserService implements UserDetailsService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof UserDetails userDetails) {
-            return userRepository.findByUsername(userDetails.getUsername())
+            return userRepository.findByUsernameAndActiveIsTrue(userDetails.getUsername())
                     .orElseThrow(() -> new UserNotFoundException(userDetails.getUsername()));
         }
         throw new IllegalAccessException("User is not authenticated");
@@ -53,7 +52,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsByUsernameAndActiveIsTrue(username);
     }
 
     @Transactional
@@ -78,7 +77,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsernameAndActiveIsTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("USERNAME_NOT_FOUND"));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
@@ -100,14 +99,15 @@ public class UserService implements UserDetailsService {
 
         spec = spec
                 .and(UserSpecification.hasUsernameLike(username))
-                .and(UserSpecification.hasRole(role));
+                .and(UserSpecification.hasRole(role))
+                .and(UserSpecification.hasActiveTrue());
 
         return userRepository.findAll(spec, pageable);
     }
 
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+        return userRepository.findByIdAndActiveIsTrue(id);
     }
 
     @Transactional
@@ -128,15 +128,32 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        historyRepository.deleteByUser_Id(id);
-        userRepository.deleteById(id);
+    public void deleteById(Long id) throws IllegalAccessException {
+        User user = userRepository.findByIdAndActiveIsTrue(id).orElseThrow(() -> new EntityNotFoundException(id));
+        user.setActive(false);
+        userRepository.save(user);
+
+        employeeRepository.deleteById(user.getId());
+
+        historyRepository.save(History.builder()
+                .user(getCurrentUser())
+                .type(HistoryType.USER)
+                .body(new UserDeletedHistoryBody(user.getUsername()))
+                .build()
+        );
     }
 
     @Transactional
-    public void changeRole(User user, Role role) {
+    public void changeRole(User user, Role role) throws IllegalAccessException {
         user.setRole(role);
         userRepository.save(user);
+
+        historyRepository.save(History.builder()
+                .user(getCurrentUser())
+                .type(HistoryType.USER)
+                .body(new UserRoleChangedHistoryBody(user.getUsername()))
+                .build()
+        );
     }
 
     @Transactional(readOnly = true)
