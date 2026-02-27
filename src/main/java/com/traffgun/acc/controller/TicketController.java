@@ -47,7 +47,7 @@ public class TicketController {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN')")
+    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN') || hasRole('TECH_MANAGER')")
     public TicketResponse createTicket(@ModelAttribute @Valid CreateTicketRequest request) throws IllegalAccessException {
         Ticket createdTicket = ticketService.create(request);
         return ticketMapper.toDto(createdTicket);
