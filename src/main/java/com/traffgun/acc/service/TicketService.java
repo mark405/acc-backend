@@ -157,14 +157,12 @@ public class TicketService {
             } catch (Exception ignored) {
             }
         });
-        ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> {
-            comment.getAttachments().forEach(f -> {
-                try {
-                    Files.deleteIfExists(Paths.get(f.getFileUrl()));
-                } catch (Exception ignored) {
-                }
-            });
-        });
+        ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> comment.getAttachments().forEach(f -> {
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
+        }));
         ticketCommentRepository.deleteAllByTicket(ticket);
 
         repository.deleteById(id);

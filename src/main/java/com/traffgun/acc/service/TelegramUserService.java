@@ -2,11 +2,9 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.TelegramUser;
-import com.traffgun.acc.entity.User;
 import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.TelegramUserRepository;
-import com.traffgun.acc.repository.UserRepository;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

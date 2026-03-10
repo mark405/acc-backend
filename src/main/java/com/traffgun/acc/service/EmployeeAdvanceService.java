@@ -2,11 +2,13 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.employee.CreateAdvanceRequest;
 import com.traffgun.acc.dto.employee.UpdateAdvanceRequest;
-import com.traffgun.acc.entity.*;
+import com.traffgun.acc.entity.Employee;
+import com.traffgun.acc.entity.EmployeeAdvance;
+import com.traffgun.acc.entity.History;
+import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.EmployeeAdvanceCreatedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeAdvanceDeletedHistoryBody;
-import com.traffgun.acc.model.history.EmployeeInfoDeletedHistoryBody;
 import com.traffgun.acc.model.history.HistoryType;
 import com.traffgun.acc.repository.EmployeeAdvanceRepository;
 import com.traffgun.acc.repository.EmployeeRepository;

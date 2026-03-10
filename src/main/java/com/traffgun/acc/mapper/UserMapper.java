@@ -4,7 +4,6 @@ import com.traffgun.acc.dto.register.RegisterRequest;
 import com.traffgun.acc.dto.register.RegisterResponse;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.entity.User;
-import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.model.UserRole;
 import org.springframework.stereotype.Component;
 

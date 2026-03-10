@@ -8,7 +8,6 @@ import com.traffgun.acc.exception.UserNotFoundException;
 import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -90,7 +88,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void changePassword(User user, ChangePasswordRequest request){
+    public void changePassword(User user, ChangePasswordRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
@@ -107,12 +105,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> findAllByIds(@NotEmpty List<Long> assignedTo) {
-        return userRepository.findAllById(assignedTo);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User>  findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findByUsernameAndActiveIsTrue(username);
     }
 

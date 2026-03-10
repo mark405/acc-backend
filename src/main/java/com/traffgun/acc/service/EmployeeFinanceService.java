@@ -7,7 +7,10 @@ import com.traffgun.acc.entity.EmployeeFinance;
 import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.exception.EntityNotFoundException;
-import com.traffgun.acc.model.history.*;
+import com.traffgun.acc.model.history.EmployeeInfoCreatedHistoryBody;
+import com.traffgun.acc.model.history.EmployeeInfoDeletedHistoryBody;
+import com.traffgun.acc.model.history.EmployeeInfoUpdatedHistoryBody;
+import com.traffgun.acc.model.history.HistoryType;
 import com.traffgun.acc.repository.EmployeeFinanceRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
@@ -21,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

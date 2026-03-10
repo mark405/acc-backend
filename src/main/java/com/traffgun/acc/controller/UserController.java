@@ -1,7 +1,6 @@
 package com.traffgun.acc.controller;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
-import com.traffgun.acc.dto.user.ChangeRoleRequest;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;

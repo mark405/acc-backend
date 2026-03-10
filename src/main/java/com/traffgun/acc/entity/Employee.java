@@ -1,7 +1,6 @@
 package com.traffgun.acc.entity;
 
 import com.traffgun.acc.model.EmployeeRole;
-import com.traffgun.acc.model.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
