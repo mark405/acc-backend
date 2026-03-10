@@ -1,13 +1,10 @@
 package com.traffgun.acc.dto.ticket;
 
-import com.traffgun.acc.dto.user.UserResponse;
+import com.traffgun.acc.dto.employee.EmployeeResponse;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,9 +16,9 @@ public class TicketResponse {
     private String text;
     private TicketType type;
     private TicketStatus status;
-    private List<UserResponse> assignedTo;
+    private List<EmployeeResponse> assignedTo;
     private List<TicketFileResponse> files;
-    private UserResponse operatedBy;
-    private UserResponse createdBy;
+    private EmployeeResponse operatedBy;
+    private EmployeeResponse createdBy;
     private Instant createdAt;
 }

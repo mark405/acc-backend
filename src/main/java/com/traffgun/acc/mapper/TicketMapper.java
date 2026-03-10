@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @Component
 @RequiredArgsConstructor
 public class TicketMapper {
-    private final UserMapper userMapper;
+    private final EmployeeMapper employeeMapper;
     private final TicketFileMapper ticketFileMapper;
 
     public TicketResponse toDto(Ticket ticket) {
@@ -19,10 +19,10 @@ public class TicketMapper {
                 ticket.getText(),
                 ticket.getType(),
                 ticket.getStatus(),
-                ticket.getAssignedTo().stream().map(userMapper::toUserDto).toList(),
+                ticket.getAssignedTo().stream().map(employeeMapper::toDto).toList(),
                 ticket.getFiles() != null ? ticket.getFiles().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
-                ticket.getOperatedBy() == null ? null: userMapper.toUserDto(ticket.getOperatedBy()),
-                userMapper.toUserDto(ticket.getCreatedBy()),
+                ticket.getOperatedBy() == null ? null: employeeMapper.toDto(ticket.getOperatedBy()),
+                employeeMapper.toDto(ticket.getCreatedBy()),
                 ticket.getCreatedAt()
         );
     }

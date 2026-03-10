@@ -33,8 +33,8 @@ public class History {
     private HistoryType type;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 
     @Column(nullable = false)
     @Convert(converter = HistoryBodyConverter.class)

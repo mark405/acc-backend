@@ -48,19 +48,19 @@ public class Ticket {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operated_by")
-    private User operatedBy;
+    private Employee operatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    private Employee createdBy;
 
     @ManyToMany
     @JoinTable(
             name = "ticket_assignments",
             joinColumns = @JoinColumn(name = "ticket_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private Set<User> assignedTo = new HashSet<>();
+    private Set<Employee> assignedTo = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

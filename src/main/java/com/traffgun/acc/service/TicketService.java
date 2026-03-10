@@ -48,14 +48,14 @@ public class TicketService {
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
-        List<User> users = userService.findAllByIds(request.getAssignedTo());
+        List<Employee> employees = employeeService.findAllByIds(request.getAssignedTo());
         Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         Ticket ticket = Ticket.builder()
                 .text(request.getText())
                 .type(request.getType())
                 .status(TicketStatus.OPENED)
-                .createdBy(userService.getCurrentUser())
-                .assignedTo(new HashSet<>(users))
+                .createdBy(employeeService.findByUser(project.getId()).orElseThrow(EntityNotFoundException::new))
+                .assignedTo(new HashSet<>(employees))
                 .project(project)
                 .build();
 
@@ -112,8 +112,8 @@ public class TicketService {
     public Ticket update(Ticket ticket, @Valid UpdateTicketRequest request) {
         ticket.setText(request.getText());
         ticket.setStatus(request.getStatus());
-        List<User> users = userService.findAllByIds(request.getAssignedTo());
-        ticket.setAssignedTo(new HashSet<>(users));
+        List<Employee> employees = employeeService.findAllByIds(request.getAssignedTo());
+        ticket.setAssignedTo(new HashSet<>(employees));
         if (request.getFilesToDelete() != null) {
             removeFiles(ticket, request.getFilesToDelete());
         }
@@ -230,7 +230,7 @@ public class TicketService {
 
         if (ticket.getType() == TicketType.TECH_GOAL
                 && ticket.getStatus() == TicketStatus.CLOSED
-                && employeeService.findByUser(project.getId()).getRole() == EmployeeRole.MANAGER) {
+                && employeeService.findByUser(project.getId()).orElseThrow(EntityNotFoundException::new).getRole() == EmployeeRole.MANAGER) {
             ticket.setStatus(TicketStatus.OPENED);
             repository.save(ticket);
         }
@@ -317,7 +317,7 @@ public class TicketService {
         ticket.setStatus(status);
         if (ticket.getType() == TicketType.TECH_GOAL) {
             if (status == TicketStatus.IN_PROGRESS) {
-                ticket.setOperatedBy(userService.getCurrentUser());
+                ticket.setOperatedBy(employeeService.findByUser(ticket.getProject().getId()).orElseThrow(EntityNotFoundException::new));
             } else {
                 ticket.setOperatedBy(null);
             }

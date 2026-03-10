@@ -30,7 +30,6 @@ public class EmployeeAdvanceService {
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
     private final ProjectRepository projectRepository;
-    private final UserService userService;
 
     @Transactional(readOnly = true)
     public Optional<EmployeeAdvance> findById(Long id) {
@@ -51,7 +50,7 @@ public class EmployeeAdvanceService {
         );
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employee)
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceCreatedHistoryBody(saved.getEmployee().getName(), saved.getDate()))
                 .project(project)
@@ -76,7 +75,7 @@ public class EmployeeAdvanceService {
         repository.deleteById(id);
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(advance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceDeletedHistoryBody(advance.getEmployee().getName(), advance.getDate()))
                 .project(advance.getProject())

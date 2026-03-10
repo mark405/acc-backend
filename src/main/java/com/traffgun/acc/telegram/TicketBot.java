@@ -4,11 +4,11 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.Ticket;
 import com.traffgun.acc.entity.TicketComment;
-import com.traffgun.acc.entity.User;
 import com.traffgun.acc.model.EmployeeRole;
-import com.traffgun.acc.repository.UserRepository;
+import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.service.TelegramUserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -26,16 +26,16 @@ public class TicketBot {
 
     private final TelegramBot bot;
     private final TelegramUserService telegramUserService;
-    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
     // Tracks users who are expected to send manager login
     private final Map<Long, EmployeeRole> waitingForLogin = new ConcurrentHashMap<>();
 
     public TicketBot(TelegramUserService telegramUserService,
-                     UserRepository userRepository,
+                     EmployeeRepository employeeRepository,
                      @Value("${telegram.bot.token}") String botToken) {
         this.telegramUserService = telegramUserService;
-        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
         this.bot = new TelegramBot(botToken);
     }
 
@@ -65,17 +65,17 @@ public class TicketBot {
                 EmployeeRole pendingRole = waitingForLogin.get(chatId);
 
                 if (pendingRole != null) {
-                    userRepository.findByUsernameAndActiveIsTrue(text).ifPresentOrElse(
+                    employeeRepository.findByName(text).ifPresentOrElse(
                             manager -> {
                                 if (pendingRole == EmployeeRole.MANAGER) {
-                                    telegramUserService.registerManager(chatId, manager.getUsername());
+                                    telegramUserService.registerManager(chatId, manager.getName());
                                 } else if (pendingRole == EmployeeRole.OFFERS_MANAGER) {
-                                    telegramUserService.registerOffersManager(chatId, manager.getUsername());
+                                    telegramUserService.registerOffersManager(chatId, manager.getName());
                                 }
 
                                 sendMessage(chatId,
                                         "You are now registered as " + pendingRole +
-                                                " for login: " + manager.getUsername());
+                                                " for name: " + manager.getName());
                             },
                             () -> sendMessage(chatId, "Login not found, try again.")
                     );
@@ -90,10 +90,10 @@ public class TicketBot {
                     sendMessage(chatId, "You will receive TECH_GOAL tickets updates.");
                 } else if (text.equalsIgnoreCase("/offers_manager")) {
                     waitingForLogin.put(chatId, EmployeeRole.OFFERS_MANAGER);
-                    sendMessage(chatId, "Please enter your manager login:");
-                }else if (text.equalsIgnoreCase("/manager")) {
+                    sendMessage(chatId, "Please enter your manager name:");
+                } else if (text.equalsIgnoreCase("/manager")) {
                     waitingForLogin.put(chatId, EmployeeRole.MANAGER);
-                    sendMessage(chatId, "Please enter your manager login:");
+                    sendMessage(chatId, "Please enter your manager name:");
                 } else {
                     sendMessage(chatId, "Send /tech_manager or /manager or /offers_manager to choose your notifications.");
                 }
@@ -106,7 +106,7 @@ public class TicketBot {
     }
 
     public void notifyNewTechTicket(Ticket ticket) {
-        String creator = ticket.getCreatedBy().getUsername();
+        String creator = ticket.getCreatedBy().getName();
         telegramUserService.findAllByRole(EmployeeRole.TECH_MANAGER).forEach(user -> {
             String message = "🆕 Новий Тікет #" + ticket.getId() + "\n" +
                     "Створив: " + escapeMarkdown(creator) + "\n\n" +
@@ -116,16 +116,16 @@ public class TicketBot {
     }
 
     public void notifyNewOffersTicket(Ticket ticket) {
-        String creator = ticket.getCreatedBy().getUsername();
+        String creator = ticket.getCreatedBy().getName();
         telegramUserService.findByRoleAndManagerIdIn(
-                EmployeeRole.OFFERS_MANAGER,
-                ticket.getAssignedTo().stream().map(User::getId).collect(Collectors.toUnmodifiableSet()))
+                        EmployeeRole.OFFERS_MANAGER,
+                        ticket.getAssignedTo().stream().map(Employee::getId).collect(Collectors.toUnmodifiableSet()))
                 .forEach(user -> {
-            String message = "🆕 Новий Тікет #" + ticket.getId() + "\n" +
-                    "Створив: " + escapeMarkdown(creator) + "\n\n" +
-                    "Опис:\n" + escapeMarkdown(ticket.getText());
-            sendMessage(user.getChatId(), message);
-        });
+                    String message = "🆕 Новий Тікет #" + ticket.getId() + "\n" +
+                            "Створив: " + escapeMarkdown(creator) + "\n\n" +
+                            "Опис:\n" + escapeMarkdown(ticket.getText());
+                    sendMessage(user.getChatId(), message);
+                });
     }
 
     // Notify ticket creator about a new comment

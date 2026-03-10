@@ -32,7 +32,6 @@ public class EmployeeFinanceService {
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
     private final ProjectRepository projectRepository;
-    private final UserService userService;
 
     @Transactional(readOnly = true)
     public Optional<EmployeeFinance> findById(Long id) {
@@ -57,7 +56,7 @@ public class EmployeeFinanceService {
         );
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employee)
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoCreatedHistoryBody(employee.getName(), saved.getStartDate(), saved.getEndDate()))
                 .project(project)
@@ -77,7 +76,7 @@ public class EmployeeFinanceService {
         var updated = repository.save(finance);
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(finance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoUpdatedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
                 .project(finance.getProject())
@@ -95,7 +94,7 @@ public class EmployeeFinanceService {
         repository.deleteById(id);
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(finance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoDeletedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
                 .project(finance.getProject())

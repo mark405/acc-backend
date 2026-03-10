@@ -1,5 +1,6 @@
 package com.traffgun.acc.repository;
 
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.entity.User;
@@ -14,9 +15,9 @@ import java.util.List;
 public interface HistoryRepository extends JpaRepository<History, Long> {
     Page<History> findByType(HistoryType type, Pageable pageable);
 
-    Page<History> findByUserInAndType(List<User> users, HistoryType type, Pageable pageable);
+    Page<History> findByEmployeeInAndType(List<Employee> employees, HistoryType type, Pageable pageable);
 
-    Page<History> findByUserIn(List<User> users, Pageable pageable);
+    Page<History> findByEmployeeIn(List<Employee> employees, Pageable pageable);
 
-    void deleteByUser_Id(Long userId);
+    void deleteByEmployee_Id(Long userId);
 }

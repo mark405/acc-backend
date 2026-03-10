@@ -2,7 +2,11 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.project.CreateProjectRequest;
 import com.traffgun.acc.dto.project.UpdateProjectRequest;
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.Project;
+import com.traffgun.acc.entity.User;
+import com.traffgun.acc.model.UserRole;
+import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +19,19 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final EmployeeRepository employeeRepository;
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<Project> findAll() {
-        return projectRepository.findAll();
+    public List<Project> findAll() throws IllegalAccessException {
+        User user = userService.getCurrentUser();
+        if (user.getRole() == UserRole.ADMIN) {
+            return projectRepository.findAll();
+        }
+
+        List<Employee> employees = employeeRepository.findAllByUser(user);
+
+        return projectRepository.findAllById(employees.stream().map(it -> it.getProject().getId()).toList());
     }
 
     @Transactional

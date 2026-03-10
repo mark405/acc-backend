@@ -9,6 +9,7 @@ import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
 import com.traffgun.acc.specification.EmployeeSpecification;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,7 +50,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public Employee findByUser(Long projectId) throws IllegalAccessException {
+    public Optional<Employee> findByUser(Long projectId) throws IllegalAccessException {
         User user = userService.getCurrentUser();
         return employeeRepository.findByUserAndProject(user, projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(projectId)));
     }
@@ -71,8 +73,13 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void changeRole(Employee employee, EmployeeRole role) throws IllegalAccessException {
+    public void changeRole(Employee employee, EmployeeRole role) {
         employee.setRole(role);
         employeeRepository.save(employee);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Employee> findAllByIds(@NotEmpty List<Long> assignedTo) {
+        return employeeRepository.findAllById(assignedTo);
     }
 }

@@ -1,8 +1,10 @@
 package com.traffgun.acc.service;
 
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.TelegramUser;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.TelegramUserRepository;
 import com.traffgun.acc.repository.UserRepository;
 import jakarta.validation.constraints.NotBlank;
@@ -17,12 +19,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class TelegramUserService {
     private final TelegramUserRepository repository;
-    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Transactional
-    public void registerManager(Long chatId, String login) {
-        User found = userRepository.findByUsernameAndActiveIsTrue(login)
-                .orElseThrow(() -> new IllegalArgumentException("Manager login not found"));
+    public void registerManager(Long chatId, String name) {
+        Employee found = employeeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
 
         repository.findByChatId(chatId).ifPresent(repository::delete);
 
@@ -60,9 +62,9 @@ public class TelegramUserService {
         return repository.findAllByRoleAndManagerIdIn(role, userIds);
     }
 
-    public void registerOffersManager(long chatId, @NotBlank String login) {
-        User found = userRepository.findByUsernameAndActiveIsTrue(login)
-                .orElseThrow(() -> new IllegalArgumentException("Manager login not found"));
+    public void registerOffersManager(long chatId, @NotBlank String name) {
+        Employee found = employeeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
 
         repository.findByChatId(chatId).ifPresent(repository::delete);
 

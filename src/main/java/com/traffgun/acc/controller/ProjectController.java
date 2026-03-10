@@ -44,7 +44,7 @@ public class ProjectController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<ProjectResponse> getAllProjects() {
+    public List<ProjectResponse> getAllProjects() throws IllegalAccessException {
         return projectService.findAll().stream().map(projectMapper::toDto).toList();
     }
 }

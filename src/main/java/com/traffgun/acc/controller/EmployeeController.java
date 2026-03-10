@@ -28,7 +28,7 @@ public class EmployeeController {
 
     @GetMapping("/by_user/{project_id}")
     public EmployeeResponse getEmployeeByUserId(@PathVariable("project_id") Long projectId) throws IllegalAccessException {
-        Employee employee = employeeService.findByUser(projectId);
+        Employee employee = employeeService.findByUser(projectId).orElseThrow(EntityNotFoundException::new);
         return employeeMapper.toDto(employee);
     }
 
@@ -68,7 +68,7 @@ public class EmployeeController {
     @PutMapping("/change-role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) throws IllegalAccessException {
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         employeeService.changeRole(employee, request.getRole());
         return ResponseEntity.noContent().build();

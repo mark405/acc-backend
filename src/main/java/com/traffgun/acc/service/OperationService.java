@@ -5,7 +5,10 @@ import com.traffgun.acc.dto.operation.OperationFilter;
 import com.traffgun.acc.dto.operation.UpdateOperationRequest;
 import com.traffgun.acc.entity.*;
 import com.traffgun.acc.exception.EntityNotFoundException;
-import com.traffgun.acc.model.history.*;
+import com.traffgun.acc.model.history.HistoryType;
+import com.traffgun.acc.model.history.OperationCreatedHistoryBody;
+import com.traffgun.acc.model.history.OperationDeletedHistoryBody;
+import com.traffgun.acc.model.history.OperationUpdatedHistoryBody;
 import com.traffgun.acc.repository.*;
 import com.traffgun.acc.specification.OperationSpecification;
 import lombok.AllArgsConstructor;
@@ -28,8 +31,8 @@ public class OperationService {
     private final CategoryRepository categoryRepository;
     private final BoardRepository boardRepository;
     private final ProjectRepository projectRepository;
-
     private final UserService userService;
+    private final EmployeeRepository employeeRepository;
 
     @Transactional(readOnly = true)
     public Page<Operation> findAll(OperationFilter filter) {
@@ -55,7 +58,7 @@ public class OperationService {
         operationRepository.deleteById(operation.getId());
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), operation.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationDeletedHistoryBody(operation.getBoard().getName(), operation.getCategory().getName(), operation.getOperationType().name()))
                 .project(operation.getProject())
@@ -84,7 +87,7 @@ public class OperationService {
                 .build());
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), saved.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationCreatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
                 .project(project)
@@ -113,7 +116,7 @@ public class OperationService {
         Operation saved = operationRepository.save(operation);
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), operation.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationUpdatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
                 .project(operation.getProject())

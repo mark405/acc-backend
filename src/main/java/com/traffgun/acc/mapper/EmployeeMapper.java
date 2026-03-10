@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EmployeeMapper {
+    private final UserMapper userMapper;
     public EmployeeResponse toDto(Employee employee) {
         return new EmployeeResponse(
                 employee.getId(),
@@ -15,7 +16,8 @@ public class EmployeeMapper {
                 employee.getComment(),
                 employee.getRating(),
                 employee.getQfd(),
-                employee.getRole()
+                employee.getRole(),
+                userMapper.toUserDto(employee.getUser())
         );
     }
 }
