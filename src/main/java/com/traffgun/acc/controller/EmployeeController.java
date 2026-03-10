@@ -20,13 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final UserService userService;
     private final EmployeeMapper employeeMapper;
 
-    @GetMapping("/by_user")
-    public EmployeeResponse getEmployeeByUserId() throws IllegalAccessException {
-        User user = userService.getCurrentUser();
-        Employee employee = employeeService.findByUser(user);
+    @GetMapping("/by_user/{project_id}")
+    public EmployeeResponse getEmployeeByUserId(@PathVariable("project_id") Long projectId) throws IllegalAccessException {
+        Employee employee = employeeService.findByUser(projectId);
         return employeeMapper.toDto(employee);
     }
 
@@ -48,13 +46,14 @@ public class EmployeeController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Page<EmployeeResponse> getAllEmployees(
+            @RequestParam(name = "project_id") Long projectId,
             @RequestParam(name = "name_or_comment", required = false) String nameOrComment,
             @RequestParam(name = "sort_by", defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ) {
-        Page<Employee> employees = employeeService.findAll(nameOrComment, sortBy, direction, page, size);
+        Page<Employee> employees = employeeService.findAll(projectId, nameOrComment, sortBy, direction, page, size);
         return employees.map(employeeMapper::toDto);
     }
 }

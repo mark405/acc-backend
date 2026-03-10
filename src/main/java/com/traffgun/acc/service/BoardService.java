@@ -41,8 +41,8 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<Board> findAll(OperationType type) {
-        return boardRepository.findAllByOperationType(type);
+    public List<Board> findAll(Long projectId, OperationType type) {
+        return boardRepository.findAllByProject_IdAndOperationType(projectId, type);
     }
 
     @Transactional

@@ -4,6 +4,8 @@ import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -62,6 +64,11 @@ public class Ticket {
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Project project;
 
     @PrePersist
     protected void onCreate() {

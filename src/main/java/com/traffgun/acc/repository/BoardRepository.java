@@ -13,4 +13,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     boolean existsByLevelTypeAndOperationType(LevelType levelType, OperationType operationType);
 
     Board findByLevelTypeAndOperationType(LevelType levelType, OperationType operationType);
+
+    List<Board> findAllByProject_IdAndOperationType(Long projectId, OperationType operationType);
 }

@@ -27,8 +27,8 @@ public class BoardController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<BoardResponse> getAllBoards(@RequestParam("type") OperationType type) {
-        return boardService.findAll(type).stream().map(boardMapper::toDto).toList();
+    public List<BoardResponse> getAllBoards(@RequestParam(name = "project_id") Long projectId, @RequestParam("type") OperationType type) {
+        return boardService.findAll(projectId, type).stream().map(boardMapper::toDto).toList();
     }
 
     @GetMapping("/{id}")
