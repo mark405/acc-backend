@@ -1,16 +1,11 @@
 package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
-import com.traffgun.acc.entity.Employee;
-import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
-import com.traffgun.acc.model.Role;
-import com.traffgun.acc.model.history.*;
-import com.traffgun.acc.repository.EmployeeRepository;
-import com.traffgun.acc.repository.HistoryRepository;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
 import jakarta.validation.constraints.NotEmpty;
@@ -36,8 +31,6 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final EmployeeRepository employeeRepository;
-    private final HistoryRepository historyRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User getCurrentUser() throws IllegalAccessException {
@@ -58,21 +51,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User saved = userRepository.save(user);
-
-        if (saved.getRole() != Role.ADMIN) {
-            Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
-            employeeRepository.save(employee);
-        }
-
-        historyRepository.save(History.builder()
-                .user(saved)
-                .type(HistoryType.USER)
-                .body(new UserCreatedHistoryBody(saved.getUsername()))
-                .build()
-        );
-
-        return saved;
+        return userRepository.save(user);
     }
 
     @Override
@@ -91,7 +70,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<User> findAll(String username, Role role, String sortBy, String direction, int page, int size) {
+    public Page<User> findAll(String username, EmployeeRole role, String sortBy, String direction, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -111,20 +90,13 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void changePassword(User user, ChangePasswordRequest request) throws IllegalAccessException {
+    public void changePassword(User user, ChangePasswordRequest request){
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserPasswordChangedHistoryBody(user.getUsername()))
-                .build()
-        );
     }
 
     @Transactional
@@ -132,28 +104,6 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByIdAndActiveIsTrue(id).orElseThrow(() -> new EntityNotFoundException(id));
         user.setActive(false);
         userRepository.save(user);
-
-        employeeRepository.deleteById(user.getId());
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserDeletedHistoryBody(user.getUsername()))
-                .build()
-        );
-    }
-
-    @Transactional
-    public void changeRole(User user, Role role) throws IllegalAccessException {
-        user.setRole(role);
-        userRepository.save(user);
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserRoleChangedHistoryBody(user.getUsername()))
-                .build()
-        );
     }
 
     @Transactional(readOnly = true)

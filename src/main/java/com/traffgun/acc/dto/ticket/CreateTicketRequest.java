@@ -17,4 +17,6 @@ public class CreateTicketRequest {
     @NotEmpty
     private List<Long> assignedTo;
     private List<MultipartFile> files;
+    @NotNull
+    private Long projectId;
 }

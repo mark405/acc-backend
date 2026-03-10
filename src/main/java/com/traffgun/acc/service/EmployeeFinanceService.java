@@ -5,11 +5,13 @@ import com.traffgun.acc.dto.employee.UpdateFinanceRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.EmployeeFinance;
 import com.traffgun.acc.entity.History;
+import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.*;
 import com.traffgun.acc.repository.EmployeeFinanceRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
+import com.traffgun.acc.repository.ProjectRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class EmployeeFinanceService {
     private final EmployeeFinanceRepository repository;
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
+    private final ProjectRepository projectRepository;
     private final UserService userService;
 
     @Transactional(readOnly = true)
@@ -40,6 +43,8 @@ public class EmployeeFinanceService {
     public EmployeeFinance create(CreateFinanceRequest request) throws IllegalAccessException {
         Employee employee = employeeRepository.findById(request.getEmployeeId())
                 .orElseThrow(() -> new EntityNotFoundException(request.getEmployeeId()));
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         var saved = repository.save(EmployeeFinance.builder()
                 .employee(employee)
                 .startDate(request.getStartDate())
@@ -47,6 +52,7 @@ public class EmployeeFinanceService {
                 .incomeQFD(request.getIncomeQFD())
                 .paidRef(request.getPaidRef())
                 .percentQFD(request.getPercentQFD())
+                .project(project)
                 .build()
         );
 
@@ -54,6 +60,7 @@ public class EmployeeFinanceService {
                 .user(userService.getCurrentUser())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoCreatedHistoryBody(employee.getName(), saved.getStartDate(), saved.getEndDate()))
+                .project(project)
                 .build()
         );
 
@@ -73,6 +80,7 @@ public class EmployeeFinanceService {
                 .user(userService.getCurrentUser())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoUpdatedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
+                .project(finance.getProject())
                 .build()
         );
 
@@ -90,6 +98,7 @@ public class EmployeeFinanceService {
                 .user(userService.getCurrentUser())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoDeletedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
+                .project(finance.getProject())
                 .build()
         );
     }

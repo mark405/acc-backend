@@ -5,14 +5,12 @@ import com.traffgun.acc.dto.UpdateCommentRequest;
 import com.traffgun.acc.dto.ticket.CreateTicketRequest;
 import com.traffgun.acc.dto.ticket.TicketFilter;
 import com.traffgun.acc.dto.ticket.UpdateTicketRequest;
-import com.traffgun.acc.entity.Ticket;
-import com.traffgun.acc.entity.TicketComment;
-import com.traffgun.acc.entity.TicketFile;
-import com.traffgun.acc.entity.User;
+import com.traffgun.acc.entity.*;
 import com.traffgun.acc.exception.EntityNotFoundException;
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
+import com.traffgun.acc.repository.ProjectRepository;
 import com.traffgun.acc.repository.TicketCommentRepository;
 import com.traffgun.acc.repository.TicketRepository;
 import com.traffgun.acc.specification.TicketSpecification;
@@ -45,17 +43,19 @@ public class TicketService {
     private final TicketCommentRepository ticketCommentRepository;
     private final UserService userService;
     private final TicketBot ticketBot;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
         List<User> users = userService.findAllByIds(request.getAssignedTo());
-
+        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         Ticket ticket = Ticket.builder()
                 .text(request.getText())
                 .type(request.getType())
                 .status(TicketStatus.OPENED)
                 .createdBy(userService.getCurrentUser())
                 .assignedTo(new HashSet<>(users))
+                .project(project)
                 .build();
 
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
@@ -97,6 +97,7 @@ public class TicketService {
                     .fileName(file.getOriginalFilename())
                     .fileUrl("ticket-files/" + fileName)
                     .ticket(ticket)
+                    .project(ticket.getProject())
                     .build();
 
             if (ticket.getFiles() == null) {
@@ -150,11 +151,17 @@ public class TicketService {
     public void deleteById(Long id) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         ticket.getFiles().forEach(f -> {
-            try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
         });
         ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> {
             comment.getAttachments().forEach(f -> {
-                try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+                try {
+                    Files.deleteIfExists(Paths.get(f.getFileUrl()));
+                } catch (Exception ignored) {
+                }
             });
         });
         ticketCommentRepository.deleteAllByTicket(ticket);
@@ -192,14 +199,21 @@ public class TicketService {
         // handle attachments
         if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
             Path uploadDir = Paths.get("ticket_files/comments");
-            try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
+            try {
+                Files.createDirectories(uploadDir);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             List<TicketFile> files = new ArrayList<>();
             for (var file : request.getAttachments()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path targetPath = uploadDir.resolve(fileName);
-                try { Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING); }
-                catch (Exception e) { throw new RuntimeException("Failed to save file", e); }
+                try {
+                    Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save file", e);
+                }
 
                 files.add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
@@ -214,7 +228,7 @@ public class TicketService {
 
         if (ticket.getType() == TicketType.TECH_GOAL
                 && ticket.getStatus() == TicketStatus.CLOSED
-                && userService.getCurrentUser().getRole() == Role.MANAGER) {
+                && userService.getCurrentUser().getRole() == EmployeeRole.MANAGER) {
             ticket.setStatus(TicketStatus.OPENED);
             repository.save(ticket);
         }
@@ -237,7 +251,10 @@ public class TicketService {
             while (iterator.hasNext()) {
                 TicketFile file = iterator.next();
                 if (request.getAttachmentsToDelete().contains(file.getId())) {
-                    try { Files.deleteIfExists(Paths.get(file.getFileUrl())); } catch (Exception ignored) {}
+                    try {
+                        Files.deleteIfExists(Paths.get(file.getFileUrl()));
+                    } catch (Exception ignored) {
+                    }
                     iterator.remove();
                 }
             }
@@ -246,13 +263,20 @@ public class TicketService {
         // add new attachments
         if (request.getAttachmentsToAdd() != null && !request.getAttachmentsToAdd().isEmpty()) {
             Path uploadDir = Paths.get("ticket_files/comments");
-            try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
+            try {
+                Files.createDirectories(uploadDir);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             for (var file : request.getAttachmentsToAdd()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path targetPath = uploadDir.resolve(fileName);
-                try { Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING); }
-                catch (Exception e) { throw new RuntimeException("Failed to save file", e); }
+                try {
+                    Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save file", e);
+                }
 
                 comment.getAttachments().add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
@@ -271,7 +295,10 @@ public class TicketService {
                 .orElseThrow(() -> new EntityNotFoundException(commentId));
 
         comment.getAttachments().forEach(f -> {
-            try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
         });
 
         ticketCommentRepository.delete(comment);

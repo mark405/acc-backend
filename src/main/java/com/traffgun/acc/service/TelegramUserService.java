@@ -2,7 +2,7 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.entity.TelegramUser;
 import com.traffgun.acc.entity.User;
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.TelegramUserRepository;
 import com.traffgun.acc.repository.UserRepository;
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +28,7 @@ public class TelegramUserService {
 
         TelegramUser user = TelegramUser.builder()
                 .chatId(chatId)
-                .role(Role.MANAGER)
+                .role(EmployeeRole.MANAGER)
                 .managerId(found.getId())
                 .build();
         repository.save(user);
@@ -40,23 +40,23 @@ public class TelegramUserService {
 
         TelegramUser user = TelegramUser.builder()
                 .chatId(chatId)
-                .role(Role.TECH_MANAGER)
+                .role(EmployeeRole.TECH_MANAGER)
                 .build();
         repository.save(user);
     }
 
     @Transactional(readOnly = true)
-    public List<TelegramUser> findAllByRole(Role role) {
+    public List<TelegramUser> findAllByRole(EmployeeRole role) {
         return repository.findAllByRole(role);
     }
 
     @Transactional(readOnly = true)
-    public List<TelegramUser> findByRoleAndManagerId(Role role, Long userId) {
+    public List<TelegramUser> findByRoleAndManagerId(EmployeeRole role, Long userId) {
         return repository.findAllByRoleAndManagerId(role, userId);
     }
 
     @Transactional(readOnly = true)
-    public List<TelegramUser> findByRoleAndManagerIdIn(Role role, Set<Long> userIds) {
+    public List<TelegramUser> findByRoleAndManagerIdIn(EmployeeRole role, Set<Long> userIds) {
         return repository.findAllByRoleAndManagerIdIn(role, userIds);
     }
 
@@ -68,7 +68,7 @@ public class TelegramUserService {
 
         TelegramUser user = TelegramUser.builder()
                 .chatId(chatId)
-                .role(Role.OFFERS_MANAGER)
+                .role(EmployeeRole.OFFERS_MANAGER)
                 .managerId(found.getId())
                 .build();
         repository.save(user);

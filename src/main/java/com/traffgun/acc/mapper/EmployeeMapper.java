@@ -14,7 +14,8 @@ public class EmployeeMapper {
                 employee.getName(),
                 employee.getComment(),
                 employee.getRating(),
-                employee.getQfd()
+                employee.getQfd(),
+                employee.getRole()
         );
     }
 }

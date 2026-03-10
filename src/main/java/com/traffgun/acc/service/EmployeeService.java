@@ -1,9 +1,11 @@
 package com.traffgun.acc.service;
 
+import com.traffgun.acc.dto.employee.CreateEmployeeRequest;
 import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
 import com.traffgun.acc.specification.EmployeeSpecification;
@@ -55,5 +57,22 @@ public class EmployeeService {
     public Employee update(Employee employee, UpdateEmployeeRequest request) {
         employee.setQfd(request.getQfd());
         return employeeRepository.save(employee);
+    }
+
+    @Transactional
+    public Employee create(CreateEmployeeRequest request) {
+        Employee employee = Employee.builder()
+                .name(request.getName())
+                .qfd(request.getQfd())
+                .project(projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId())))
+                .build();
+
+        return employeeRepository.save(employee);
+    }
+
+    @Transactional
+    public void changeRole(Employee employee, EmployeeRole role) throws IllegalAccessException {
+        employee.setRole(role);
+        employeeRepository.save(employee);
     }
 }

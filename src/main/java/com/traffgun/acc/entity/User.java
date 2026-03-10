@@ -1,6 +1,6 @@
 package com.traffgun.acc.entity;
 
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -29,9 +29,9 @@ public class User {
     @NotBlank
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

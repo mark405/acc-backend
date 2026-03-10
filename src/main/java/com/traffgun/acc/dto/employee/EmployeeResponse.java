@@ -1,5 +1,6 @@
 package com.traffgun.acc.dto.employee;
 
+import com.traffgun.acc.model.EmployeeRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,4 +12,6 @@ public class EmployeeResponse {
     private String comment;
     private Double rating;
     private Double qfd;
+    private EmployeeRole role;
+
 }

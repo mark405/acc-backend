@@ -20,4 +20,6 @@ public class CreateOperationRequest {
     private OperationType operationType;
     @Nullable
     private Instant date;
+    @NotNull
+    private Long projectId;
 }

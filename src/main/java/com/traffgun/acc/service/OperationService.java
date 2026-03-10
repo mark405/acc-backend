@@ -3,16 +3,10 @@ package com.traffgun.acc.service;
 import com.traffgun.acc.dto.operation.CreateOperationRequest;
 import com.traffgun.acc.dto.operation.OperationFilter;
 import com.traffgun.acc.dto.operation.UpdateOperationRequest;
-import com.traffgun.acc.entity.Board;
-import com.traffgun.acc.entity.Category;
-import com.traffgun.acc.entity.History;
-import com.traffgun.acc.entity.Operation;
+import com.traffgun.acc.entity.*;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.*;
-import com.traffgun.acc.repository.BoardRepository;
-import com.traffgun.acc.repository.CategoryRepository;
-import com.traffgun.acc.repository.HistoryRepository;
-import com.traffgun.acc.repository.OperationRepository;
+import com.traffgun.acc.repository.*;
 import com.traffgun.acc.specification.OperationSpecification;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +27,7 @@ public class OperationService {
     private final HistoryRepository historyRepository;
     private final CategoryRepository categoryRepository;
     private final BoardRepository boardRepository;
+    private final ProjectRepository projectRepository;
 
     private final UserService userService;
 
@@ -63,6 +58,7 @@ public class OperationService {
                 .user(userService.getCurrentUser())
                 .type(HistoryType.OPERATION)
                 .body(new OperationDeletedHistoryBody(operation.getBoard().getName(), operation.getCategory().getName(), operation.getOperationType().name()))
+                .project(operation.getProject())
                 .build()
         );
     }
@@ -76,6 +72,7 @@ public class OperationService {
     public Operation create(CreateOperationRequest request) throws IllegalAccessException {
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new EntityNotFoundException(request.getCategoryId()));
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(() -> new EntityNotFoundException(request.getBoardId()));
+        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(category.getProject().getId()));
         Operation saved = operationRepository.save(Operation.builder()
                 .amount(request.getAmount())
                 .category(category)
@@ -83,12 +80,14 @@ public class OperationService {
                 .comment(request.getComment())
                 .operationType(request.getOperationType())
                 .date(request.getDate())
+                .project(project)
                 .build());
 
         historyRepository.save(History.builder()
                 .user(userService.getCurrentUser())
                 .type(HistoryType.OPERATION)
                 .body(new OperationCreatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
+                .project(project)
                 .build()
         );
 
@@ -117,6 +116,7 @@ public class OperationService {
                 .user(userService.getCurrentUser())
                 .type(HistoryType.OPERATION)
                 .body(new OperationUpdatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
+                .project(operation.getProject())
                 .build()
         );
 

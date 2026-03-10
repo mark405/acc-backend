@@ -1,5 +1,7 @@
 package com.traffgun.acc.entity;
 
+import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.model.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -26,7 +28,7 @@ public class Employee {
 
     private Double rating;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
@@ -41,4 +43,8 @@ public class Employee {
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
+
+    @Column(nullable = false, columnDefinition = "varchar")
+    @Enumerated(EnumType.STRING)
+    private EmployeeRole role;
 }

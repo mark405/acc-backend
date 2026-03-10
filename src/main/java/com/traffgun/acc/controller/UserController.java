@@ -7,7 +7,8 @@ import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.UserIsAdminException;
 import com.traffgun.acc.mapper.UserMapper;
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.model.UserRole;
 import com.traffgun.acc.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class UserController {
     @GetMapping
     public Page<UserResponse> getAllUsers(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) EmployeeRole role,
             @RequestParam(name = "sort_by", defaultValue = "username") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page,
@@ -49,19 +50,10 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) throws IllegalAccessException {
         User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-        if (user.getRole() == Role.ADMIN) {
+        if (user.getRole() == UserRole.ADMIN) {
             throw new UserIsAdminException();
         }
         userService.changePassword(user, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/change-role/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) throws IllegalAccessException {
-        User user = userService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-        userService.changeRole(user, request.getRole());
         return ResponseEntity.noContent().build();
     }
 

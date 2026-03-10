@@ -1,7 +1,9 @@
 package com.traffgun.acc.controller;
 
+import com.traffgun.acc.dto.employee.CreateEmployeeRequest;
 import com.traffgun.acc.dto.employee.EmployeeResponse;
 import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
+import com.traffgun.acc.dto.user.ChangeRoleRequest;
 import com.traffgun.acc.entity.Category;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
@@ -11,6 +13,8 @@ import com.traffgun.acc.service.EmployeeService;
 import com.traffgun.acc.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,15 +40,19 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeResponse updateEmployee(@PathVariable Long id, @RequestBody UpdateEmployeeRequest request) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         Employee updatedEmployee = employeeService.update(employee, request);
         return employeeMapper.toDto(updatedEmployee);
     }
 
+    @PostMapping()
+    public EmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request) {
+        Employee createdEmployee = employeeService.create(request);
+        return employeeMapper.toDto(createdEmployee);
+    }
+
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<EmployeeResponse> getAllEmployees(
             @RequestParam(name = "project_id") Long projectId,
             @RequestParam(name = "name_or_comment", required = false) String nameOrComment,
@@ -55,5 +63,14 @@ public class EmployeeController {
     ) {
         Page<Employee> employees = employeeService.findAll(projectId, nameOrComment, sortBy, direction, page, size);
         return employees.map(employeeMapper::toDto);
+    }
+
+    @PutMapping("/change-role/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) throws IllegalAccessException {
+        Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        employeeService.changeRole(employee, request.getRole());
+        return ResponseEntity.noContent().build();
     }
 }

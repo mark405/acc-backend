@@ -10,6 +10,8 @@ public class CreateFinanceRequest {
     @NotNull
     private Long employeeId;
     @NotNull
+    private Long projectId;
+    @NotNull
     private LocalDate startDate;
     @NotNull
     private LocalDate endDate;
