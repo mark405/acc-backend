@@ -20,7 +20,7 @@ public class Project {
     @NotBlank
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER      )
     @JoinColumn(name = "created_by")
     private User createdBy;
 }

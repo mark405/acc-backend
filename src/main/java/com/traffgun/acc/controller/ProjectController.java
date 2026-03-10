@@ -8,6 +8,8 @@ import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.mapper.ProjectMapper;
 import com.traffgun.acc.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +45,15 @@ public class ProjectController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public List<ProjectResponse> getAllProjects() throws IllegalAccessException {
         return projectService.findAll().stream().map(projectMapper::toDto).toList();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
+        projectService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
