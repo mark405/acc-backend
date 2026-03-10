@@ -44,6 +44,7 @@ public class TicketService {
     private final UserService userService;
     private final TicketBot ticketBot;
     private final ProjectRepository projectRepository;
+    private final EmployeeService employeeService;
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
@@ -189,11 +190,12 @@ public class TicketService {
     public TicketComment addComment(Long ticketId, CreateCommentRequest request) throws IllegalAccessException {
         Ticket ticket = repository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
+        Project project = ticket.getProject();
         TicketComment comment = TicketComment.builder()
                 .text(request.getText())
                 .ticket(ticket)
                 .createdBy(userService.getCurrentUser())
+                .project(project)
                 .build();
 
         // handle attachments
@@ -228,7 +230,7 @@ public class TicketService {
 
         if (ticket.getType() == TicketType.TECH_GOAL
                 && ticket.getStatus() == TicketStatus.CLOSED
-                && userService.getCurrentUser().getRole() == EmployeeRole.MANAGER) {
+                && employeeService.findByUser(project.getId()).getRole() == EmployeeRole.MANAGER) {
             ticket.setStatus(TicketStatus.OPENED);
             repository.save(ticket);
         }

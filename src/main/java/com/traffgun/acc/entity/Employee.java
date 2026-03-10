@@ -44,7 +44,7 @@ public class Employee {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
 
-    @Column(nullable = false, columnDefinition = "varchar")
+    @Column(columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;
 }
