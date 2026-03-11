@@ -5,7 +5,6 @@ import com.traffgun.acc.dto.statistics.StatisticsResponse;
 import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.model.OperationType;
-import com.traffgun.acc.repository.BoardRepository;
 import com.traffgun.acc.repository.OperationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,12 @@ public class StatisticsService {
     private final BoardService boardService;
 
     @Transactional(readOnly = true)
-    public StatisticsResponse getStats(int year, OperationType type) {
+    public StatisticsResponse getStats(Long projectId, int year, OperationType type) {
         Instant start = Instant.parse(year + "-01-01T00:00:00Z");
         Instant end = Instant.parse(year + "-12-31T23:59:59Z");
 
-        Board main = boardService.findMainBoard(type);
-        Set<Operation> operations = operationRepository.findAllByDateBetweenAndBoardAndOperationType(start, end, main, type);
+        Board main = boardService.findMainBoard(type, projectId);
+        Set<Operation> operations = operationRepository.findAllByDateBetweenAndBoardAndOperationTypeAndProject_Id(start, end, main, type, projectId);
 
         ZoneId zone = ZoneId.of("Europe/Kyiv");
 

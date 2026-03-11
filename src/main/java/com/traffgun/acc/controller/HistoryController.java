@@ -22,13 +22,14 @@ public class HistoryController {
 
     @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<HistoryResponse> getAllHistories(@RequestParam(required = false, value = "username") String username,
+    public Page<HistoryResponse> getAllHistories(@RequestParam(value = "project_id") Long projectId,
+                                                 @RequestParam(required = false, value = "username") String username,
                                                  @RequestParam(required = false, value = "type") HistoryType type,
                                                  @RequestParam(required = false, value = "sort_by") String sortBy,
                                                  @RequestParam(required = false, value = "direction") String direction,
                                                  @RequestParam(required = false, value = "page") int page,
                                                  @RequestParam(required = false, value = "size") int size
     ) {
-        return historyService.findAll(username, type, sortBy, direction, page, size).map(historyMapper::toDto);
+        return historyService.findAll(projectId, username, type, sortBy, direction, page, size).map(historyMapper::toDto);
     }
 }

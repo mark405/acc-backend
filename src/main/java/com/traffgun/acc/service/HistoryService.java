@@ -1,11 +1,9 @@
 package com.traffgun.acc.service;
 
-import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.History;
 import com.traffgun.acc.model.history.HistoryType;
-import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
-import com.traffgun.acc.specification.EmployeeSpecification;
+import com.traffgun.acc.specification.HistorySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,14 +13,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class HistoryService {
-
     private final HistoryRepository historyRepository;
-    private final EmployeeRepository employeeRepository;
 
     @Transactional
     public History create(History history) {
@@ -30,7 +24,7 @@ public class HistoryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<History> findAll(String name, HistoryType type, String sortBy, String direction, int page, int size) {
+    public Page<History> findAll(Long projectId, String name, HistoryType type, String sortBy, String direction, int page, int size) {
         Sort sort = Sort.by(sortBy);
         if ("desc".equalsIgnoreCase(direction)) {
             sort = sort.descending();
@@ -40,22 +34,13 @@ public class HistoryService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        List<Employee> employees = null;
-        if (name != null && !name.isBlank()) {
-            Specification<Employee> spec = (root, query, cb) -> cb.conjunction();
+        Specification<History> spec = (root, query, cb) -> cb.conjunction();
 
-            spec = spec.and(EmployeeSpecification.hasNameLike(name));
-            employees = employeeRepository.findAll(spec);
-        }
+        spec = spec
+                .and(HistorySpecification.hasProjectId(projectId))
+                .and(HistorySpecification.hasType(type))
+                .and(HistorySpecification.hasName(name));
 
-        if (employees != null && type != null) {
-            return historyRepository.findByEmployeeInAndType(employees, type, pageable);
-        } else if (employees != null) {
-            return historyRepository.findByEmployeeIn(employees, pageable);
-        } else if (type != null) {
-            return historyRepository.findByType(type, pageable);
-        } else {
-            return historyRepository.findAll(pageable);
-        }
+        return historyRepository.findAll(spec, pageable);
     }
 }

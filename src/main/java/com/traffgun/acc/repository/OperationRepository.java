@@ -21,5 +21,5 @@ public interface OperationRepository extends JpaRepository<Operation, Long>, Jpa
     @Query("DELETE FROM Operation o WHERE o.category.id = :categoryId")
     void deleteByCategoryId(@Param("categoryId") Long categoryId);
 
-    Set<Operation> findAllByDateBetweenAndBoardAndOperationType(Instant dateAfter, Instant dateBefore, Board board, OperationType operationType);
+    Set<Operation> findAllByDateBetweenAndBoardAndOperationTypeAndProject_Id(Instant dateAfter, Instant dateBefore, Board board, OperationType operationType, Long projectId);
 }

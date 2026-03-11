@@ -10,7 +10,7 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     boolean existsByLevelTypeAndOperationType(LevelType levelType, OperationType operationType);
 
-    Board findByLevelTypeAndOperationType(LevelType levelType, OperationType operationType);
-
     List<Board> findAllByProject_IdAndOperationType(Long projectId, OperationType operationType);
+
+    Board findByLevelTypeAndOperationTypeAndProject_Id(LevelType levelType, OperationType operationType, Long projectId);
 }

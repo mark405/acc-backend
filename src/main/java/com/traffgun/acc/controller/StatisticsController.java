@@ -19,8 +19,9 @@ public class StatisticsController {
 
     @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public StatisticsResponse getStats(@RequestParam("year") Integer year,
+    public StatisticsResponse getStats(@RequestParam("project_id") Long projectId,
+                                       @RequestParam("year") Integer year,
                                        @RequestParam("type") OperationType type) {
-        return service.getStats(year, type);
+        return service.getStats(projectId, year, type);
     }
 }
