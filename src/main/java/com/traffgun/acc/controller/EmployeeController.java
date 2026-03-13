@@ -50,6 +50,13 @@ public class EmployeeController {
         return employeeMapper.toDto(createdEmployee);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id){
+        employeeService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public Page<EmployeeResponse> getAllEmployees(
             @RequestParam(name = "project_id") Long projectId,

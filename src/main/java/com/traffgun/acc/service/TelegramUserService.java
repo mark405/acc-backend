@@ -21,7 +21,7 @@ public class TelegramUserService {
 
     @Transactional
     public void registerManager(Long chatId, String name) {
-        Employee found = employeeRepository.findByName(name)
+        Employee found = employeeRepository.findByNameAndActiveIsTrue(name)
                 .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
 
         repository.findByChatId(chatId).ifPresent(repository::delete);
@@ -61,7 +61,7 @@ public class TelegramUserService {
     }
 
     public void registerOffersManager(long chatId, @NotBlank String name) {
-        Employee found = employeeRepository.findByName(name)
+        Employee found = employeeRepository.findByNameAndActiveIsTrue(name)
                 .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
 
         repository.findByChatId(chatId).ifPresent(repository::delete);

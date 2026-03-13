@@ -15,16 +15,16 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
     @EntityGraph(value = "Employee.user")
-    Optional<Employee> findByUserAndProject(User user, Project project);
-
-    @EntityGraph(value = "Employee.user")
-    Optional<Employee> findById(Long id);
+    Optional<Employee> findByUserAndProjectAndActiveIsTrue(User user, Project project);
 
     @EntityGraph(value = "Employee.user")
     Page<Employee> findAll(Specification<Employee> spec, Pageable pageable);
 
-    Optional<Employee> findByName(String name);
+    Optional<Employee> findByNameAndActiveIsTrue(String name);
 
     @EntityGraph(value = "Employee.user")
-    List<Employee> findAllByUser(User user);
+    Optional<Employee> findByIdAndActiveIsTrue(Long id);
+
+    @EntityGraph(value = "Employee.user")
+    List<Employee> findAllByUserAndActiveIsTrue(User user);
 }

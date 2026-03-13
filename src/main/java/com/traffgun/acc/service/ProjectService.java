@@ -29,7 +29,7 @@ public class ProjectService {
             return projectRepository.findAll();
         }
 
-        List<Employee> employees = employeeRepository.findAllByUser(user);
+        List<Employee> employees = employeeRepository.findAllByUserAndActiveIsTrue(user);
 
         return projectRepository.findAllById(employees.stream().map(it -> it.getProject().getId()).toList());
     }

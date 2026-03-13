@@ -43,4 +43,9 @@ public class EmployeeSpecification {
                         ? null
                         : cb.equal(root.get("role"), role);
     }
+
+    public static Specification<Employee> hasActiveTrue() {
+        return (root, query, cb) ->
+                cb.equal(root.get("active"), true);
+    }
 }

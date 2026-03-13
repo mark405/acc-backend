@@ -10,5 +10,5 @@ public class CreateEmployeeRequest {
     @NotNull
     private String name;
     @NotNull
-    private Double qfd;
+    private Long userId;
 }

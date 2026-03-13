@@ -1,13 +1,16 @@
 package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
+import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
-import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.model.UserRole;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -68,7 +72,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<User> findAll(String username, EmployeeRole role, String sortBy, String direction, int page, int size) {
+    public Page<User> findAll(Long projectId, String username, UserRole role, String sortBy, String direction, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -78,6 +82,19 @@ public class UserService implements UserDetailsService {
                 .and(UserSpecification.hasUsernameLike(username))
                 .and(UserSpecification.hasRole(role))
                 .and(UserSpecification.hasActiveTrue());
+
+        if (projectId != null) {
+            spec = spec.and((root, query, cb) -> {
+                Objects.requireNonNull(query, "query is null");
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<Employee> employeeRoot = subquery.from(Employee.class);
+                subquery.select(employeeRoot.get("user").get("id"))
+                        .where(cb.equal(employeeRoot.get("project").get("id"), projectId));
+
+                return cb.not(root.get("id").in(subquery));
+            });
+        }
+
 
         return userRepository.findAll(spec, pageable);
     }

@@ -42,11 +42,17 @@ public class User {
     private Instant modifiedAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
 
     @Column(name = "totp_secret")
     private String totpSecret;
 
     @Column(name = "totp_enabled")
+    @Builder.Default
     private Boolean totpEnabled = false;
+
+    public boolean getTotpEnabled() {
+        return totpEnabled != null && totpEnabled;
+    }
 }

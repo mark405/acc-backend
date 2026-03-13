@@ -33,14 +33,15 @@ public class UserController {
 
     @GetMapping
     public Page<UserResponse> getAllUsers(
+            @RequestParam(name = "project_id", required = false) Long projectId,
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) EmployeeRole role,
+            @RequestParam(required = false) UserRole role,
             @RequestParam(name = "sort_by", defaultValue = "username") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ) {
-        Page<User> users = userService.findAll(username, role, sortBy, direction, page, size);
+        Page<User> users = userService.findAll(projectId, username, role, sortBy, direction, page, size);
         return users.map(userMapper::toUserDto);
     }
 

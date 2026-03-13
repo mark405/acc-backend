@@ -50,4 +50,8 @@ public class Employee {
     @Column(columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean active = true;
 }

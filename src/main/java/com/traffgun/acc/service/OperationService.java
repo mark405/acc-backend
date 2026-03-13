@@ -58,7 +58,7 @@ public class OperationService {
         operationRepository.deleteById(operation.getId());
 
         historyRepository.save(History.builder()
-                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), operation.getProject()).orElseThrow())
+                .employee(employeeRepository.findByUserAndProjectAndActiveIsTrue(userService.getCurrentUser(), operation.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationDeletedHistoryBody(operation.getBoard().getName(), operation.getCategory().getName(), operation.getOperationType().name()))
                 .project(operation.getProject())
@@ -87,7 +87,7 @@ public class OperationService {
                 .build());
 
         historyRepository.save(History.builder()
-                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), saved.getProject()).orElseThrow())
+                .employee(employeeRepository.findByUserAndProjectAndActiveIsTrue(userService.getCurrentUser(), saved.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationCreatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
                 .project(project)
@@ -116,7 +116,7 @@ public class OperationService {
         Operation saved = operationRepository.save(operation);
 
         historyRepository.save(History.builder()
-                .employee(employeeRepository.findByUserAndProject(userService.getCurrentUser(), operation.getProject()).orElseThrow())
+                .employee(employeeRepository.findByUserAndProjectAndActiveIsTrue(userService.getCurrentUser(), operation.getProject()).orElseThrow())
                 .type(HistoryType.OPERATION)
                 .body(new OperationUpdatedHistoryBody(board.getName(), category.getName(), request.getOperationType().name()))
                 .project(operation.getProject())

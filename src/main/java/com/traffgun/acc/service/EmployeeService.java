@@ -31,7 +31,7 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public Optional<Employee> findById(Long id) {
-        return employeeRepository.findById(id);
+        return employeeRepository.findByIdAndActiveIsTrue(id);
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +45,8 @@ public class EmployeeService {
         spec = spec
                 .and(EmployeeSpecification.hasRole(role))
                 .and(EmployeeSpecification.hasProject(projectId))
-                .and(EmployeeSpecification.hasNameOrComment(nameOrComment));
+                .and(EmployeeSpecification.hasNameOrComment(nameOrComment))
+                .and(EmployeeSpecification.hasActiveTrue());
 
         return employeeRepository.findAll(spec, pageable);
     }
@@ -53,7 +54,7 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public Optional<Employee> findByUser(Long projectId) throws IllegalAccessException {
         User user = userService.getCurrentUser();
-        return employeeRepository.findByUserAndProject(user, projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(projectId)));
+        return employeeRepository.findByUserAndProjectAndActiveIsTrue(user, projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(projectId)));
     }
 
     @Transactional
@@ -66,8 +67,9 @@ public class EmployeeService {
     public Employee create(CreateEmployeeRequest request) {
         Employee employee = Employee.builder()
                 .name(request.getName())
-                .qfd(request.getQfd())
+                .qfd(1D)
                 .project(projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId())))
+                .user(userService.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException(request.getUserId())))
                 .build();
 
         return employeeRepository.save(employee);
@@ -82,5 +84,15 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public List<Employee> findAllByIds(@NotEmpty List<Long> assignedTo) {
         return employeeRepository.findAllById(assignedTo);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+
+        employee.setActive(false);
+        employee.setProject(null);
+        employeeRepository.save(employee);
     }
 }
