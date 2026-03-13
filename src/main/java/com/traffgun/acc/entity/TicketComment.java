@@ -45,11 +45,6 @@ public class TicketComment {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project project;
-
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

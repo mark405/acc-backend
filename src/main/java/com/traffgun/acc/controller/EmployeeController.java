@@ -7,6 +7,7 @@ import com.traffgun.acc.dto.user.ChangeRoleRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.mapper.EmployeeMapper;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -54,11 +55,12 @@ public class EmployeeController {
             @RequestParam(name = "project_id") Long projectId,
             @RequestParam(name = "name_or_comment", required = false) String nameOrComment,
             @RequestParam(name = "sort_by", defaultValue = "name") String sortBy,
+            @RequestParam(name = "role", required = false) EmployeeRole role,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ) {
-        Page<Employee> employees = employeeService.findAll(projectId, nameOrComment, sortBy, direction, page, size);
+        Page<Employee> employees = employeeService.findAll(projectId, role, nameOrComment, sortBy, direction, page, size);
         return employees.map(employeeMapper::toDto);
     }
 

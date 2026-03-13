@@ -47,7 +47,6 @@ public class EmployeeAdvanceService {
                 .employee(employee)
                 .date(request.getDate())
                 .amount(request.getAmount())
-                .project(project)
                 .build()
         );
 
@@ -80,7 +79,6 @@ public class EmployeeAdvanceService {
                 .employee(advance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceDeletedHistoryBody(advance.getEmployee().getName(), advance.getDate()))
-                .project(advance.getProject())
                 .build()
         );
     }

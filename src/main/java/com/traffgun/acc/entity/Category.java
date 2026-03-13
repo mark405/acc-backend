@@ -25,9 +25,4 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project project;
 }

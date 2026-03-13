@@ -19,33 +19,19 @@ $$
             UPDATE boards
             SET project_id = new_project_id
             WHERE project_id IS NULL;
-            UPDATE categories
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
+
             UPDATE employees
             SET project_id = new_project_id
             WHERE project_id IS NULL;
-            UPDATE employee_advance
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
-            UPDATE employee_finance
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
+
             UPDATE histories
             SET project_id = new_project_id
             WHERE project_id IS NULL;
-            UPDATE operations
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
+
             UPDATE tickets
             SET project_id = new_project_id
             WHERE project_id IS NULL;
-            UPDATE ticket_comments
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
-            UPDATE ticket_files
-            SET project_id = new_project_id
-            WHERE project_id IS NULL;
+
         END IF;
     END
 $$;

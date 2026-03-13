@@ -49,7 +49,6 @@ public class CategoryService {
                 .board(boardRepository.findById(request.getBoardId()).orElseThrow(() -> new EntityNotFoundException(request.getBoardId())))
                 .name(request.getName())
                 .comment(request.getComment())
-                .project(projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId())))
                 .build()
         );
     }

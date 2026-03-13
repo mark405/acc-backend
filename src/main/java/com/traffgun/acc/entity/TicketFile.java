@@ -2,8 +2,6 @@ package com.traffgun.acc.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "ticket_files")
@@ -30,9 +28,4 @@ public class TicketFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private TicketComment comment;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project project;
 }

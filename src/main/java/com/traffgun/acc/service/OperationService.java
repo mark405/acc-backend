@@ -75,7 +75,7 @@ public class OperationService {
     public Operation create(CreateOperationRequest request) throws IllegalAccessException {
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new EntityNotFoundException(request.getCategoryId()));
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(() -> new EntityNotFoundException(request.getBoardId()));
-        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(category.getProject().getId()));
+        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         Operation saved = operationRepository.save(Operation.builder()
                 .amount(request.getAmount())
                 .category(category)

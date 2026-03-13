@@ -48,7 +48,7 @@ public class TicketService {
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
-        List<Employee> employees = employeeService.findAllByIds(request.getAssignedTo());
+        List<Employee> employees = request.getAssignedTo() == null ? new ArrayList<>() : employeeService.findAllByIds(request.getAssignedTo());
         Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         Ticket ticket = Ticket.builder()
                 .text(request.getText())
@@ -98,7 +98,6 @@ public class TicketService {
                     .fileName(file.getOriginalFilename())
                     .fileUrl("ticket-files/" + fileName)
                     .ticket(ticket)
-                    .project(ticket.getProject())
                     .build();
 
             if (ticket.getFiles() == null) {
@@ -194,7 +193,6 @@ public class TicketService {
                 .text(request.getText())
                 .ticket(ticket)
                 .createdBy(userService.getCurrentUser())
-                .project(project)
                 .build();
 
         // handle attachments

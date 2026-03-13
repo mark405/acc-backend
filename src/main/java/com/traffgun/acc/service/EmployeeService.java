@@ -35,7 +35,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Employee> findAll(Long projectId, String nameOrComment, String sortBy, String direction, int page, int size) {
+    public Page<Employee> findAll(Long projectId, EmployeeRole role, String nameOrComment, String sortBy, String direction, int page, int size) {
 
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -43,6 +43,7 @@ public class EmployeeService {
         Specification<Employee> spec = (root, query, cb) -> cb.conjunction();
 
         spec = spec
+                .and(EmployeeSpecification.hasRole(role))
                 .and(EmployeeSpecification.hasProject(projectId))
                 .and(EmployeeSpecification.hasNameOrComment(nameOrComment));
 

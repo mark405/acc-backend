@@ -14,7 +14,6 @@ public class CreateTicketRequest {
     private String text;
     @NotNull
     private TicketType type;
-    @NotEmpty
     private List<Long> assignedTo;
     private List<MultipartFile> files;
     @NotNull

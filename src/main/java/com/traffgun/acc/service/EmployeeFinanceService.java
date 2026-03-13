@@ -53,7 +53,6 @@ public class EmployeeFinanceService {
                 .incomeQFD(request.getIncomeQFD())
                 .paidRef(request.getPaidRef())
                 .percentQFD(request.getPercentQFD())
-                .project(project)
                 .build()
         );
 
@@ -81,7 +80,7 @@ public class EmployeeFinanceService {
                 .employee(finance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoUpdatedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
-                .project(finance.getProject())
+                .project(finance.getEmployee().getProject())
                 .build()
         );
 
@@ -99,7 +98,7 @@ public class EmployeeFinanceService {
                 .employee(finance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeInfoDeletedHistoryBody(finance.getEmployee().getName(), finance.getStartDate(), finance.getEndDate()))
-                .project(finance.getProject())
+                .project(finance.getEmployee().getProject())
                 .build()
         );
     }
