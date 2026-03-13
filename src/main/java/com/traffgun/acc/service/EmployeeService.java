@@ -60,6 +60,7 @@ public class EmployeeService {
     @Transactional
     public Employee update(Employee employee, UpdateEmployeeRequest request) {
         employee.setQfd(request.getQfd());
+        employee.setName(request.getName());
         return employeeRepository.save(employee);
     }
 
