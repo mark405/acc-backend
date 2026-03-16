@@ -60,6 +60,7 @@ public class Ticket {
             joinColumns = @JoinColumn(name = "ticket_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Employee> assignedTo = new HashSet<>();
 
     @Column(nullable = false, updatable = false)

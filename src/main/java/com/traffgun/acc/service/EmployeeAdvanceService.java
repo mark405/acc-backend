@@ -5,7 +5,6 @@ import com.traffgun.acc.dto.employee.UpdateAdvanceRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.EmployeeAdvance;
 import com.traffgun.acc.entity.History;
-import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.EmployeeAdvanceCreatedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeAdvanceDeletedHistoryBody;
@@ -13,7 +12,6 @@ import com.traffgun.acc.model.history.HistoryType;
 import com.traffgun.acc.repository.EmployeeAdvanceRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.HistoryRepository;
-import com.traffgun.acc.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,6 @@ public class EmployeeAdvanceService {
     private final EmployeeAdvanceRepository repository;
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
-    private final ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
     public Optional<EmployeeAdvance> findById(Long id) {
@@ -42,7 +39,6 @@ public class EmployeeAdvanceService {
     public EmployeeAdvance create(CreateAdvanceRequest request) throws IllegalAccessException {
         Employee employee = employeeRepository.findById(request.getEmployeeId())
                 .orElseThrow(() -> new EntityNotFoundException(request.getEmployeeId()));
-        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         var saved = repository.save(EmployeeAdvance.builder()
                 .employee(employee)
                 .date(request.getDate())
@@ -54,7 +50,7 @@ public class EmployeeAdvanceService {
                 .employee(employee)
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceCreatedHistoryBody(saved.getEmployee().getName(), saved.getDate()))
-                .project(project)
+                .project(employee.getProject())
                 .build()
         );
 

@@ -9,8 +9,6 @@ import java.time.Instant;
 public class CreateAdvanceRequest {
     @NotNull
     private Long employeeId;
-    @NotNull
-    private Long projectId;
     private Instant date;
     private Double amount;
 }

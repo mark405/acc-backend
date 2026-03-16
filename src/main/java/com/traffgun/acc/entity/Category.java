@@ -24,5 +24,6 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "board_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 }

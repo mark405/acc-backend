@@ -71,6 +71,7 @@ public class EmployeeService {
                 .qfd(1D)
                 .project(projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId())))
                 .user(userService.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException(request.getUserId())))
+                .role(EmployeeRole.MANAGER)
                 .build();
 
         return employeeRepository.save(employee);

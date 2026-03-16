@@ -2,10 +2,15 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.project.CreateProjectRequest;
 import com.traffgun.acc.dto.project.UpdateProjectRequest;
+import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.entity.User;
+import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.model.LevelType;
+import com.traffgun.acc.model.OperationType;
 import com.traffgun.acc.model.UserRole;
+import com.traffgun.acc.repository.BoardRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
@@ -20,6 +25,7 @@ import java.util.Optional;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final EmployeeRepository employeeRepository;
+    private final BoardRepository boardRepository;
     private final UserService userService;
 
     @Transactional(readOnly = true)
@@ -46,11 +52,26 @@ public class ProjectService {
 
     @Transactional
     public Project create(CreateProjectRequest request) throws IllegalAccessException {
-        return projectRepository.save(Project.builder()
+        User user = userService.getCurrentUser();
+        Project project = projectRepository.save(Project.builder()
                 .name(request.getName())
-                .createdBy(userService.getCurrentUser())
+                .createdBy(user)
                 .build()
         );
+
+        employeeRepository.save(Employee.builder()
+                .name(user.getUsername())
+                .project(project)
+                .role(EmployeeRole.ADMIN)
+                .active(true)
+                .user(user)
+                .build()
+        );
+
+        boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.EXPENSE).project(project).build());
+        boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.INCOME).project(project).build());
+
+        return project;
     }
 
     @Transactional

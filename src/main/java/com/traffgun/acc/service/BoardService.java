@@ -11,6 +11,7 @@ import com.traffgun.acc.repository.BoardRepository;
 import com.traffgun.acc.repository.CategoryRepository;
 import com.traffgun.acc.repository.OperationRepository;
 import com.traffgun.acc.repository.ProjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,27 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
-
     private final BoardRepository boardRepository;
     private final OperationRepository operationRepository;
     private final CategoryRepository categoryRepository;
     private final ProjectRepository projectRepository;
-
-    public BoardService(BoardRepository boardRepository, OperationRepository operationRepository, CategoryRepository categoryRepository, ProjectRepository projectRepository) {
-        this.boardRepository = boardRepository;
-        this.operationRepository = operationRepository;
-        this.categoryRepository = categoryRepository;
-        this.projectRepository = projectRepository;
-
-        if (!boardRepository.existsByLevelTypeAndOperationType(LevelType.MAIN, OperationType.EXPENSE)) {
-            boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.EXPENSE).build());
-        }
-
-        if (!boardRepository.existsByLevelTypeAndOperationType(LevelType.MAIN, OperationType.INCOME)) {
-            boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.INCOME).build());
-        }
-    }
 
     @Transactional(readOnly = true)
     public Board findMainBoard(OperationType operationType, Long projectId) {
