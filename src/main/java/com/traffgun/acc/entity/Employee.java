@@ -40,12 +40,18 @@ public class Employee {
     )
     private User user;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
+
     private Double qfd;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
+
+    @Column(name = "project_id", insertable = false, updatable = false)
+    private Long projectId;
 
     @Column(columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)

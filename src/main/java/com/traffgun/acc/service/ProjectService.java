@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -78,5 +79,9 @@ public class ProjectService {
     public Project update(Project project, UpdateProjectRequest request) {
         project.setName(request.getName());
         return projectRepository.save(project);
+    }
+
+    public List<Project> findAllByIds(Set<Long> projectIds) {
+        return projectRepository.findAllById(projectIds);
     }
 }

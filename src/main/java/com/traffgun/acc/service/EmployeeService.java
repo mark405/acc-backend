@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -96,5 +97,9 @@ public class EmployeeService {
         employee.setActive(false);
         employee.setProject(null);
         employeeRepository.save(employee);
+    }
+
+    public List<Employee> findAllByUserIds(Set<Long> userIds) {
+        return employeeRepository.findAllByUserIdIn(userIds);
     }
 }
