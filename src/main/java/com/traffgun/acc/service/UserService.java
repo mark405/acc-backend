@@ -7,6 +7,7 @@ import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
 import com.traffgun.acc.model.UserRole;
+import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
 import jakarta.persistence.criteria.Root;
@@ -31,8 +32,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User getCurrentUser() throws IllegalAccessException {
@@ -117,8 +118,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void deleteById(Long id) throws IllegalAccessException {
         User user = userRepository.findByIdAndActiveIsTrue(id).orElseThrow(() -> new EntityNotFoundException(id));
-        user.setActive(false);
-        userRepository.save(user);
+        userRepository.delete(user);
     }
 
     @Transactional(readOnly = true)

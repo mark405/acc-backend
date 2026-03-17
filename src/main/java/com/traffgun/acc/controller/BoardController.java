@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,27 +25,23 @@ public class BoardController {
     private final BoardMapper boardMapper;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public List<BoardResponse> getAllBoards(@RequestParam(name = "project_id") Long projectId, @RequestParam("type") OperationType type) {
         return boardService.findAll(projectId, type).stream().map(boardMapper::toDto).toList();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public BoardResponse getBoardById(@PathVariable Long id) {
         Board board = boardService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return boardMapper.toDto(board);
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     public BoardResponse createBoard(@RequestBody @Valid CreateBoardRequest request) {
         Board updatedBoard = boardService.create(request);
         return boardMapper.toDto(updatedBoard);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public BoardResponse updateBoard(@PathVariable("id") Long id, @RequestBody @Valid UpdateBoardRequest request) {
         Board board = boardService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         Board updatedBoard = boardService.update(board, request);
@@ -54,7 +49,6 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id) {
         boardService.deleteById(id);

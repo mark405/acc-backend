@@ -31,7 +31,6 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeResponse getEmployeeById(@PathVariable Long id) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return employeeMapper.toDto(employee);
@@ -72,7 +71,6 @@ public class EmployeeController {
     }
 
     @PutMapping("/change-role/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));

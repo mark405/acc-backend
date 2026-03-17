@@ -23,14 +23,12 @@ public class EmployeeAdvanceController {
     private final EmployeeAdvanceMapper mapper;
 
     @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeAdvanceResponse createAdvance(@RequestBody @Valid CreateAdvanceRequest request) throws IllegalAccessException {
         EmployeeAdvance advance = service.create(request);
         return mapper.toDto(advance);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeAdvanceResponse updateAdvance(@PathVariable("id") Long id, @RequestBody @Valid UpdateAdvanceRequest request) {
         EmployeeAdvance advance = service.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         EmployeeAdvance updatedAdvance = service.update(advance, request);
@@ -38,7 +36,6 @@ public class EmployeeAdvanceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteAdvance(@PathVariable("id") Long id) throws IllegalAccessException {
         service.deleteById(id);

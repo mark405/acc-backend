@@ -21,7 +21,6 @@ public class HistoryController {
     private final HistoryMapper historyMapper;
 
     @GetMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<HistoryResponse> getAllHistories(@RequestParam(value = "project_id") Long projectId,
                                                  @RequestParam(required = false, value = "username") String username,
                                                  @RequestParam(required = false, value = "type") HistoryType type,
