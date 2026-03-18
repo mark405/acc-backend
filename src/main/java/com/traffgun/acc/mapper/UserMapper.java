@@ -34,7 +34,8 @@ public class UserMapper {
                 user.getRole(),
                 user.getCreatedAt(),
                 user.getModifiedAt(),
-                user.getTotpEnabled()
+                user.getTotpEnabled(),
+                user.getOffersEditable()
         );
     }
 }

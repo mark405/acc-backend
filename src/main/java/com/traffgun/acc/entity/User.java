@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.web.bind.annotation.CookieValue;
 
 import java.time.Instant;
 
@@ -49,4 +50,8 @@ public class User {
 
     @Column(name = "totp_enabled")
     private Boolean totpEnabled = false;
+
+    @Column(name = "offers_editable")
+    @Builder.Default
+    private Boolean offersEditable = false;
 }

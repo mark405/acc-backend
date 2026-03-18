@@ -15,4 +15,5 @@ public class UserResponse {
     private Instant createdAt;
     private Instant modifiedAt;
     private Boolean totpEnabled;
+    private Boolean offersEditable;
 }

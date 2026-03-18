@@ -175,4 +175,11 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
     }
+
+    @Transactional
+    public void changeOffersEditable(User user) {
+        boolean current = Boolean.TRUE.equals(user.getOffersEditable()); // null-safe
+        user.setOffersEditable(!current);
+        userRepository.save(user);
+    }
 }
