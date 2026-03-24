@@ -150,11 +150,17 @@ public class TicketService {
     public void deleteById(Long id) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         ticket.getFiles().forEach(f -> {
-            try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
         });
         ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> {
             comment.getAttachments().forEach(f -> {
-                try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+                try {
+                    Files.deleteIfExists(Paths.get(f.getFileUrl()));
+                } catch (Exception ignored) {
+                }
             });
         });
         ticketCommentRepository.deleteAllByTicket(ticket);
@@ -166,12 +172,12 @@ public class TicketService {
     public Page<Ticket> findAll(@Valid TicketFilter filter) {
         Specification<Ticket> spec = (root, query, cb) -> cb.conjunction();
 
-        spec = spec
-                .and(TicketSpecification.hasTypes(filter.getTypes()))
+        spec = TicketSpecification.hasTypes(filter.getTypes())
                 .and(TicketSpecification.hasStatus(filter.getStatus()))
-                .or(TicketSpecification.hasCreatedBy(filter.getCreatedBy()))
-                .or(TicketSpecification.hasAssignedTo(filter.getAssignedTo()));
-
+                .and(
+                        TicketSpecification.hasCreatedBy(filter.getCreatedBy())
+                                .or(TicketSpecification.hasAssignedTo(filter.getAssignedTo()))
+                );
         Sort sort = Sort.by(Sort.Direction.fromString(filter.getDirection()), filter.getSortBy());
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
 
@@ -192,14 +198,21 @@ public class TicketService {
         // handle attachments
         if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
             Path uploadDir = Paths.get("ticket_files/comments");
-            try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
+            try {
+                Files.createDirectories(uploadDir);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             List<TicketFile> files = new ArrayList<>();
             for (var file : request.getAttachments()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path targetPath = uploadDir.resolve(fileName);
-                try { Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING); }
-                catch (Exception e) { throw new RuntimeException("Failed to save file", e); }
+                try {
+                    Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save file", e);
+                }
 
                 files.add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
@@ -237,7 +250,10 @@ public class TicketService {
             while (iterator.hasNext()) {
                 TicketFile file = iterator.next();
                 if (request.getAttachmentsToDelete().contains(file.getId())) {
-                    try { Files.deleteIfExists(Paths.get(file.getFileUrl())); } catch (Exception ignored) {}
+                    try {
+                        Files.deleteIfExists(Paths.get(file.getFileUrl()));
+                    } catch (Exception ignored) {
+                    }
                     iterator.remove();
                 }
             }
@@ -246,13 +262,20 @@ public class TicketService {
         // add new attachments
         if (request.getAttachmentsToAdd() != null && !request.getAttachmentsToAdd().isEmpty()) {
             Path uploadDir = Paths.get("ticket_files/comments");
-            try { Files.createDirectories(uploadDir); } catch (Exception e) { throw new RuntimeException(e); }
+            try {
+                Files.createDirectories(uploadDir);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             for (var file : request.getAttachmentsToAdd()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path targetPath = uploadDir.resolve(fileName);
-                try { Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING); }
-                catch (Exception e) { throw new RuntimeException("Failed to save file", e); }
+                try {
+                    Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to save file", e);
+                }
 
                 comment.getAttachments().add(TicketFile.builder()
                         .fileName(file.getOriginalFilename())
@@ -271,7 +294,10 @@ public class TicketService {
                 .orElseThrow(() -> new EntityNotFoundException(commentId));
 
         comment.getAttachments().forEach(f -> {
-            try { Files.deleteIfExists(Paths.get(f.getFileUrl())); } catch (Exception ignored) {}
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
         });
 
         ticketCommentRepository.delete(comment);
