@@ -167,10 +167,10 @@ public class TicketService {
         Specification<Ticket> spec = (root, query, cb) -> cb.conjunction();
 
         spec = spec
-                .and(TicketSpecification.hasTypes(filter.getTypes()))
-                .and(TicketSpecification.hasStatus(filter.getStatus()))
-                .and(TicketSpecification.hasCreatedBy(filter.getCreatedBy()))
-                .and(TicketSpecification.hasAssignedTo(filter.getAssignedTo()));
+                .or(TicketSpecification.hasTypes(filter.getTypes()))
+                .or(TicketSpecification.hasStatus(filter.getStatus()))
+                .or(TicketSpecification.hasCreatedBy(filter.getCreatedBy()))
+                .or(TicketSpecification.hasAssignedTo(filter.getAssignedTo()));
 
         Sort sort = Sort.by(Sort.Direction.fromString(filter.getDirection()), filter.getSortBy());
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
