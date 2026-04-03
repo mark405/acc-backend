@@ -5,6 +5,8 @@ import com.traffgun.acc.model.EmployeeRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class EmployeeResponse {
@@ -15,4 +17,5 @@ public class EmployeeResponse {
     private Double qfd;
     private EmployeeRole role;
     private UserResponse user;
+    private List<ColumnResponse> columns;
 }

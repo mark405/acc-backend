@@ -1,19 +1,18 @@
 package com.traffgun.acc.controller;
 
-import com.traffgun.acc.dto.employee.CreateEmployeeRequest;
-import com.traffgun.acc.dto.employee.EmployeeResponse;
-import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
+import com.traffgun.acc.dto.employee.*;
 import com.traffgun.acc.dto.user.ChangeRoleRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.mapper.EmployeeMapper;
 import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.service.ConditionService;
 import com.traffgun.acc.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final ConditionService conditionService;
     private final EmployeeMapper employeeMapper;
 
     @GetMapping("/by_user/{project_id}")
@@ -34,6 +34,31 @@ public class EmployeeController {
     public EmployeeResponse getEmployeeById(@PathVariable Long id) {
         Employee employee = employeeService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return employeeMapper.toDto(employee);
+    }
+
+    @GetMapping("/{id}/conditions")
+    public String getConditions(@PathVariable Long id) {
+        return conditionService.findByEmployeeId(id);
+    }
+
+    @PostMapping("/{id}/conditions")
+    public String addConditions(@PathVariable("id") Long id, @RequestBody AddConditionsRequest request) {
+        return conditionService.add(id, request.getText()).getText();
+    }
+
+    @PostMapping("/{id}/columns")
+    public void addColumn(@PathVariable("id") Long id, @RequestBody AddColumnRequest request) {
+       employeeService.addColumn(id, request.getName());
+    }
+
+    @PutMapping("/{id}/columns")
+    public void editColumn(@PathVariable("id") Long id, @RequestBody EditColumnRequest request) {
+        employeeService.editColumn(id, request.getName());
+    }
+
+    @DeleteMapping("/{id}/columns")
+    public void deleteColumn(@PathVariable("id") Long id) {
+        employeeService.deleteColumn(id);
     }
 
     @PutMapping("/{id}")
@@ -51,7 +76,7 @@ public class EmployeeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id){
+    public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
         employeeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

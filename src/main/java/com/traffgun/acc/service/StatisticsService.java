@@ -50,4 +50,11 @@ public class StatisticsService {
 
         return new StatisticsResponse(stats, year);
     }
+
+    @Transactional(readOnly = true)
+    public double getStats(Long boardId, Instant start, Instant end, OperationType type) {
+        Set<Operation> operations = operationRepository.findAllByDateBetweenAndOperationTypeAndBoard_Id(start, end, type, boardId);
+
+        return operations.stream().mapToDouble(Operation::getAmount).sum();
+    }
 }

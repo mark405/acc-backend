@@ -1,11 +1,14 @@
 package com.traffgun.acc.service;
 
+import com.traffgun.acc.dto.employee.ColumnResponse;
 import com.traffgun.acc.dto.employee.CreateEmployeeRequest;
 import com.traffgun.acc.dto.employee.UpdateEmployeeRequest;
 import com.traffgun.acc.entity.Employee;
+import com.traffgun.acc.entity.EmployeeColumn;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.repository.ColumnRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
 import com.traffgun.acc.specification.EmployeeSpecification;
@@ -29,7 +32,7 @@ public class EmployeeService {
     private final UserService userService;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
-
+    private final ColumnRepository columnRepository;
     @Transactional(readOnly = true)
     public Optional<Employee> findById(Long id) {
         return employeeRepository.findByIdAndActiveIsTrue(id);
@@ -101,5 +104,28 @@ public class EmployeeService {
 
     public List<Employee> findAllByUserIds(Set<Long> userIds) {
         return employeeRepository.findAllByUserIdIn(userIds);
+    }
+
+    @Transactional
+    public EmployeeColumn addColumn(Long id, String name) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        return columnRepository.save(EmployeeColumn.builder().employee(employee).name(name).build());
+    }
+
+    @Transactional
+    public EmployeeColumn editColumn(Long id, String name) {
+        EmployeeColumn column = columnRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        column.setName(name);
+        return columnRepository.save(column);
+    }
+
+    @Transactional
+    public void deleteColumn(Long id) {
+        EmployeeColumn column = columnRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+
+        columnRepository.delete(column);
     }
 }
