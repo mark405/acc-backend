@@ -50,9 +50,6 @@ public class EmployeeFinanceService {
                 .employee(employee)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .incomeQFD(request.getIncomeQFD())
-                .paidRef(request.getPaidRef())
-                .percentQFD(request.getPercentQFD())
                 .build()
         );
 
@@ -71,9 +68,6 @@ public class EmployeeFinanceService {
     public EmployeeFinance update(EmployeeFinance finance, @Valid UpdateFinanceRequest request) throws IllegalAccessException {
         finance.setStartDate(request.getStartDate());
         finance.setEndDate(request.getEndDate());
-        finance.setIncomeQFD(request.getIncomeQFD());
-        finance.setPaidRef(request.getPaidRef());
-        finance.setPercentQFD(request.getPercentQFD());
         var updated = repository.save(finance);
 
         historyRepository.save(History.builder()

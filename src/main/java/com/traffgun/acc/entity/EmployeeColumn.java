@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "employee_columns")
@@ -26,5 +28,5 @@ public class EmployeeColumn {
     private Employee employee;
 
     @OneToMany(mappedBy = "column", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmployeeValue> values = new ArrayList<>();
+    private Set<EmployeeValue> values = new HashSet<>();
 }

@@ -63,7 +63,6 @@ public class EmployeeService {
 
     @Transactional
     public Employee update(Employee employee, UpdateEmployeeRequest request) {
-        employee.setQfd(request.getQfd());
         employee.setName(request.getName());
         return employeeRepository.save(employee);
     }
@@ -72,7 +71,6 @@ public class EmployeeService {
     public Employee create(CreateEmployeeRequest request) {
         Employee employee = Employee.builder()
                 .name(request.getName())
-                .qfd(1D)
                 .project(projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId())))
                 .user(userService.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException(request.getUserId())))
                 .role(EmployeeRole.MANAGER)

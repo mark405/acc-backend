@@ -69,9 +69,6 @@ public class EmployeeFinanceController {
                     f.getId(),
                     f.getStartDate(),
                     f.getEndDate(),
-                    f.getIncomeQFD(),
-                    f.getPaidRef(),
-                    f.getPercentQFD(),
                     Collections.emptyList()
             ));
         }
@@ -103,9 +100,6 @@ public class EmployeeFinanceController {
                         f.getId(),
                         f.getStartDate(),
                         f.getEndDate(),
-                        f.getIncomeQFD(),
-                        f.getPaidRef(),
-                        f.getPercentQFD(),
                         advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList())
                 ));
     }

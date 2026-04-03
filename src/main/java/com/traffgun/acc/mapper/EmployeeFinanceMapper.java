@@ -17,9 +17,6 @@ public class EmployeeFinanceMapper {
                 finance.getId(),
                 finance.getStartDate(),
                 finance.getEndDate(),
-                finance.getIncomeQFD(),
-                finance.getPaidRef(),
-                finance.getPercentQFD(),
                 advances
         );
     }

@@ -8,7 +8,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "employees")
@@ -20,6 +22,21 @@ import java.util.List;
 @NamedEntityGraph(
         name = "Employee.user",
         attributeNodes = @NamedAttributeNode("user")
+)
+@NamedEntityGraph(
+        name = "Employee.full",
+        attributeNodes = {
+                @NamedAttributeNode("user"),
+                @NamedAttributeNode(value = "columns", subgraph = "columns-subgraph")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "columns-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("values")
+                        }
+                )
+        }
 )
 public class Employee {
     @Id
@@ -46,8 +63,6 @@ public class Employee {
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
 
-    private Double qfd;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -65,5 +80,5 @@ public class Employee {
     private Boolean active = true;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmployeeColumn> columns = new ArrayList<>();
+    private Set<EmployeeColumn> columns = new HashSet<>();
 }

@@ -14,7 +14,6 @@ public class EmployeeResponse {
     private String name;
     private String comment;
     private Double rating;
-    private Double qfd;
     private EmployeeRole role;
     private UserResponse user;
     private List<ColumnResponse> columns;

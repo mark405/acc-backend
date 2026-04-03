@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
-    @EntityGraph(value = "Employee.user")
+    @EntityGraph(value = "Employee.full")
     Optional<Employee> findByUserAndProjectAndActiveIsTrue(User user, Project project);
 
     @EntityGraph(value = "Employee.user")
@@ -23,7 +23,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
     Optional<Employee> findByNameAndActiveIsTrue(String name);
 
-    @EntityGraph(value = "Employee.user")
+    @EntityGraph(value = "Employee.full")
     Optional<Employee> findByIdAndActiveIsTrue(Long id);
 
     @EntityGraph(value = "Employee.user")

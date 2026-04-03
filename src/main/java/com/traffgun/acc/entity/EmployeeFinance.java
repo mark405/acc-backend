@@ -25,15 +25,6 @@ public class EmployeeFinance {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private Double incomeQFD;
-
-    @Column(nullable = false)
-    private Double paidRef;
-
-    @Column(nullable = false)
-    private Double percentQFD;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

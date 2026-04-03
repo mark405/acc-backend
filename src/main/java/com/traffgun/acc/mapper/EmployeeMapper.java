@@ -18,7 +18,6 @@ public class EmployeeMapper {
                 employee.getName(),
                 employee.getComment(),
                 employee.getRating(),
-                employee.getQfd(),
                 employee.getRole(),
                 userMapper.toUserDto(employee.getUser()),
                 employee.getColumns().stream()

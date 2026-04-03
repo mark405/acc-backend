@@ -15,11 +15,5 @@ public class EmployeeFinanceResponse {
 
     private LocalDate endDate;
 
-    private Double incomeQFD;
-
-    private Double paidRef;
-
-    private Double percentQFD;
-
     private List<EmployeeAdvanceResponse> advances;
 }
