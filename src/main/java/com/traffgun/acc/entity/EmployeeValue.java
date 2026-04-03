@@ -15,9 +15,11 @@ public class EmployeeValue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long employeeColumnId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_column_id", nullable = false)
-    private EmployeeColumn column;
+    @JoinColumn(name = "employee_finance_id", nullable = false)
+    private EmployeeFinance finance;
 
     private String value;
 }

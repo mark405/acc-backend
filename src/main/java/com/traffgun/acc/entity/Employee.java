@@ -27,15 +27,7 @@ import java.util.Set;
         name = "Employee.full",
         attributeNodes = {
                 @NamedAttributeNode("user"),
-                @NamedAttributeNode(value = "columns", subgraph = "columns-subgraph")
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "columns-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("values")
-                        }
-                )
+                @NamedAttributeNode("columns")
         }
 )
 public class Employee {

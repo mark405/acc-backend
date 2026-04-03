@@ -16,4 +16,6 @@ public class EmployeeFinanceResponse {
     private LocalDate endDate;
 
     private List<EmployeeAdvanceResponse> advances;
+
+    private List<ValueResponse> values;
 }

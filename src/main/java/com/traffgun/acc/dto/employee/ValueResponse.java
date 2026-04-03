@@ -7,4 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class ValueResponse {
     private String name;
+    private Long employeeColumnId;
 }

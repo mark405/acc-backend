@@ -1,9 +1,6 @@
 package com.traffgun.acc.controller;
 
-import com.traffgun.acc.dto.employee.CreateFinanceRequest;
-import com.traffgun.acc.dto.employee.EmployeeAdvanceResponse;
-import com.traffgun.acc.dto.employee.EmployeeFinanceResponse;
-import com.traffgun.acc.dto.employee.UpdateFinanceRequest;
+import com.traffgun.acc.dto.employee.*;
 import com.traffgun.acc.entity.EmployeeAdvance;
 import com.traffgun.acc.entity.EmployeeFinance;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -69,6 +66,7 @@ public class EmployeeFinanceController {
                     f.getId(),
                     f.getStartDate(),
                     f.getEndDate(),
+                    Collections.emptyList(),
                     Collections.emptyList()
             ));
         }
@@ -100,7 +98,8 @@ public class EmployeeFinanceController {
                         f.getId(),
                         f.getStartDate(),
                         f.getEndDate(),
-                        advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList())
+                        advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList()),
+                        f.getValues().stream().map(it -> new ValueResponse(it.getValue(), it.getEmployeeColumnId())).toList()
                 ));
     }
 }

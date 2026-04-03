@@ -26,7 +26,4 @@ public class EmployeeColumn {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
-
-    @OneToMany(mappedBy = "column", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmployeeValue> values = new HashSet<>();
 }

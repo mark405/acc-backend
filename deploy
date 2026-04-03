@@ -1,2 +1,3 @@
 scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\target\acc.jar root@146.190.49.164:/root/
 scp C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\src\main\resources\application.properties root@146.190.49.164:/root/
+C:\Users\MarkRufin-Zavhorodni\IdeaProjects\acc-backend\acc-backend\target\acc.jar root@142.93.160.90:/root/

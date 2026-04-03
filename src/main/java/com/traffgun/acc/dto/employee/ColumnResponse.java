@@ -9,5 +9,4 @@ import java.util.List;
 @AllArgsConstructor
 public class ColumnResponse {
     private String name;
-    private List<ValueResponse> values;
 }
