@@ -8,10 +8,7 @@ import com.traffgun.acc.model.history.EmployeeInfoCreatedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeInfoDeletedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeInfoUpdatedHistoryBody;
 import com.traffgun.acc.model.history.HistoryType;
-import com.traffgun.acc.repository.EmployeeFinanceRepository;
-import com.traffgun.acc.repository.EmployeeRepository;
-import com.traffgun.acc.repository.HistoryRepository;
-import com.traffgun.acc.repository.ProjectRepository;
+import com.traffgun.acc.repository.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +31,7 @@ public class EmployeeFinanceService {
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
     private final ProjectRepository projectRepository;
+    private final ValueRepository valueRepository;
 
     @Transactional(readOnly = true)
     public Optional<EmployeeFinance> findById(Long id) {
@@ -81,6 +79,24 @@ public class EmployeeFinanceService {
     public EmployeeFinance update(EmployeeFinance finance, @Valid UpdateFinanceRequest request) throws IllegalAccessException {
         finance.setStartDate(request.getStartDate());
         finance.setEndDate(request.getEndDate());
+
+        if (request.getValues() != null) {
+            for (var v : request.getValues()) {
+                EmployeeValue entity;
+                if (v.getId() == null) {
+                    entity = EmployeeValue.builder()
+                            .employeeColumnId(v.getColumnId())
+                            .finance(finance)
+                            .build();
+                } else {
+                    entity = valueRepository.findById(v.getId()).orElseThrow(() -> new EntityNotFoundException(v.getId()));
+                }
+
+                entity.setValue(v.getValue());
+                valueRepository.save(entity);
+            }
+        }
+
         var updated = repository.save(finance);
 
         historyRepository.save(History.builder()
