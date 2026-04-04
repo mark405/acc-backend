@@ -19,7 +19,7 @@ public class EmployeeFinanceMapper {
                 finance.getStartDate(),
                 finance.getEndDate(),
                 advances,
-                finance.getValues().stream().map(it -> new ValueResponse(it.getValue(), it.getEmployeeColumnId())).toList()
+                finance.getValues().stream().map(it -> new ValueResponse(it.getId(), it.getValue(), it.getEmployeeColumnId())).toList()
         );
     }
 }

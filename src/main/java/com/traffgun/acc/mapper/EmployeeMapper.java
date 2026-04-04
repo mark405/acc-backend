@@ -19,7 +19,7 @@ public class EmployeeMapper {
                 employee.getRating(),
                 employee.getRole(),
                 userMapper.toUserDto(employee.getUser()),
-                employee.getColumns().stream().map(it -> new ColumnResponse(it.getName())).toList()
+                employee.getColumns().stream().map(it -> new ColumnResponse(it.getId(), it.getName())).toList()
         );
     }
 }

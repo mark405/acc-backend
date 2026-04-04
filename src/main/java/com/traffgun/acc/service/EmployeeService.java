@@ -11,6 +11,7 @@ import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.repository.ColumnRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.ProjectRepository;
+import com.traffgun.acc.repository.ValueRepository;
 import com.traffgun.acc.specification.EmployeeSpecification;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
     private final ColumnRepository columnRepository;
+    private final ValueRepository valueRepository;
+
     @Transactional(readOnly = true)
     public Optional<Employee> findById(Long id) {
         return employeeRepository.findByIdAndActiveIsTrue(id);
@@ -123,7 +126,7 @@ public class EmployeeService {
     public void deleteColumn(Long id) {
         EmployeeColumn column = columnRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
-
+        valueRepository.deleteByEmployeeColumnId(id);
         columnRepository.delete(column);
     }
 }

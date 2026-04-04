@@ -8,5 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ColumnResponse {
+    private Long id;
     private String name;
 }

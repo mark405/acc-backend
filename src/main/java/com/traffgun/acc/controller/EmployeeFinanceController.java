@@ -99,7 +99,7 @@ public class EmployeeFinanceController {
                         f.getStartDate(),
                         f.getEndDate(),
                         advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList()),
-                        f.getValues().stream().map(it -> new ValueResponse(it.getValue(), it.getEmployeeColumnId())).toList()
+                        f.getValues().stream().map(it -> new ValueResponse(it.getId(), it.getValue(), it.getEmployeeColumnId())).toList()
                 ));
     }
 }

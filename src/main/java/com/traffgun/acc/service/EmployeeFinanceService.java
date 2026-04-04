@@ -2,10 +2,7 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.employee.CreateFinanceRequest;
 import com.traffgun.acc.dto.employee.UpdateFinanceRequest;
-import com.traffgun.acc.entity.Employee;
-import com.traffgun.acc.entity.EmployeeFinance;
-import com.traffgun.acc.entity.History;
-import com.traffgun.acc.entity.Project;
+import com.traffgun.acc.entity.*;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.EmployeeInfoCreatedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeInfoDeletedHistoryBody;
@@ -24,7 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +52,19 @@ public class EmployeeFinanceService {
                 .endDate(request.getEndDate())
                 .build()
         );
+
+        List<EmployeeValue> values = request.getValues()
+                .stream()
+                .map(value -> EmployeeValue.builder()
+                        .employeeColumnId(value.getColumnId())
+                        .value(value.getValue())
+                        .finance(saved)
+                        .build())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        saved.setValues(values);
+
+        repository.save(saved);
 
         historyRepository.save(History.builder()
                 .employee(employee)

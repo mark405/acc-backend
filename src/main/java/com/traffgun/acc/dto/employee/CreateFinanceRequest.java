@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class CreateFinanceRequest {
@@ -15,10 +16,6 @@ public class CreateFinanceRequest {
     private LocalDate startDate;
     @NotNull
     private LocalDate endDate;
-    @NotNull
-    private Double incomeQFD;
-    @NotNull
-    private Double paidRef;
-    @NotNull
-    private Double percentQFD;
+
+    private List<AddValueRequest> values;
 }
