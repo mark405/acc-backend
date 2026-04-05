@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class EditColumnRequest {
     private String name;
+    private Integer index;
 }

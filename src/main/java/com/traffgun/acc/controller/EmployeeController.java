@@ -48,12 +48,12 @@ public class EmployeeController {
 
     @PostMapping("/{id}/columns")
     public void addColumn(@PathVariable("id") Long id, @RequestBody AddColumnRequest request) {
-       employeeService.addColumn(id, request.getName());
+       employeeService.addColumn(id, request.getName(), request.getIndex());
     }
 
     @PutMapping("/{id}/columns")
     public void editColumn(@PathVariable("id") Long id, @RequestBody EditColumnRequest request) {
-        employeeService.editColumn(id, request.getName());
+        employeeService.editColumn(id, request.getName(), request.getIndex());
     }
 
     @DeleteMapping("/{id}/columns")

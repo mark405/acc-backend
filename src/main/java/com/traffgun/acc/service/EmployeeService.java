@@ -108,17 +108,18 @@ public class EmployeeService {
     }
 
     @Transactional
-    public EmployeeColumn addColumn(Long id, String name) {
+    public EmployeeColumn addColumn(Long id, String name, Integer index) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
-        return columnRepository.save(EmployeeColumn.builder().employee(employee).name(name).build());
+        return columnRepository.save(EmployeeColumn.builder().employee(employee).index(index).name(name).build());
     }
 
     @Transactional
-    public EmployeeColumn editColumn(Long id, String name) {
+    public EmployeeColumn editColumn(Long id, String name, Integer index) {
         EmployeeColumn column = columnRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
         column.setName(name);
+        column.setIndex(index);
         return columnRepository.save(column);
     }
 
