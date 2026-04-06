@@ -8,6 +8,7 @@ import com.traffgun.acc.entity.EmployeeFinance;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -19,6 +20,7 @@ public class EmployeeFinanceMapper {
                 finance.getStartDate(),
                 finance.getEndDate(),
                 advances,
+                finance.getValues() == null ? new ArrayList<>() :
                 finance.getValues().stream().map(it -> new ValueResponse(it.getId(), it.getValue(), it.getEmployeeColumnId())).toList()
         );
     }

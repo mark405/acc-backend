@@ -6,6 +6,8 @@ import com.traffgun.acc.entity.Employee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 @RequiredArgsConstructor
 public class EmployeeMapper {
@@ -19,6 +21,7 @@ public class EmployeeMapper {
                 employee.getRating(),
                 employee.getRole(),
                 userMapper.toUserDto(employee.getUser()),
+                employee.getColumns() == null ? new ArrayList<>() :
                 employee.getColumns().stream().map(it -> new ColumnResponse(it.getId(), it.getName(), it.getIndex())).toList()
         );
     }
