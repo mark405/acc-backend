@@ -8,6 +8,7 @@ import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.repository.BoardRepository;
 import com.traffgun.acc.repository.CategoryRepository;
 import com.traffgun.acc.repository.OperationRepository;
+import com.traffgun.acc.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final OperationRepository operationRepository;
     private final BoardRepository boardRepository;
+    private final ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
     public List<Category> findAll(Long boardId) {

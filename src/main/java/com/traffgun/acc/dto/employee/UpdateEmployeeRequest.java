@@ -7,4 +7,5 @@ import lombok.Data;
 public class UpdateEmployeeRequest {
     @NotNull
     private Double qfd;
+    private String name;
 }

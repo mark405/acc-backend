@@ -1,15 +1,20 @@
 package com.traffgun.acc.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+@NamedEntityGraph(
+        name = "EmployeeFinance.withValues",
+        attributeNodes = {
+                @NamedAttributeNode("values")
+        }
+)
 @Entity
 @Table(name = "employee_finance")
 @Getter
@@ -28,14 +33,8 @@ public class EmployeeFinance {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private Double incomeQFD;
-
-    @Column(nullable = false)
-    private Double paidRef;
-
-    @Column(nullable = false)
-    private Double percentQFD;
+    @OneToMany(mappedBy = "finance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmployeeValue> values = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)

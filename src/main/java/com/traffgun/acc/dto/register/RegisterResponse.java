@@ -1,6 +1,6 @@
 package com.traffgun.acc.dto.register;
 
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +9,6 @@ import lombok.Data;
 public class RegisterResponse {
     private Long id;
     private String username;
-    private Role role;
+    private UserRole role;
     private Boolean totpEnabled;
 }

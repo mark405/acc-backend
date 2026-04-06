@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class HistoryMapper {
-    private final UserMapper userMapper;
+    private final EmployeeMapper employeeMapper;
 
     public HistoryResponse toDto(History history) {
         return new HistoryResponse(
                 history.getId(),
                 history.getBody(),
-                userMapper.toUserDto(history.getUser()),
+                employeeMapper.toDto(history.getEmployee()),
                 history.getType(),
                 history.getDate()
         );

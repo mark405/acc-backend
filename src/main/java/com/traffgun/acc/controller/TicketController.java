@@ -7,14 +7,12 @@ import com.traffgun.acc.entity.Ticket;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.mapper.TicketCommentMapper;
 import com.traffgun.acc.mapper.TicketMapper;
-import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,14 +45,12 @@ public class TicketController {
     }
 
     @PostMapping("/create")
-//    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN') || hasRole('TECH_MANAGER')")
     public TicketResponse createTicket(@ModelAttribute @Valid CreateTicketRequest request) throws IllegalAccessException {
         Ticket createdTicket = ticketService.create(request);
         return ticketMapper.toDto(createdTicket);
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('MANAGER') || hasRole('ADMIN')")
     public TicketResponse updateTicket(@PathVariable("id") Long id, @ModelAttribute @Valid UpdateTicketRequest request) {
         Ticket ticket = ticketService.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         Ticket createdTicket = ticketService.update(ticket, request);
@@ -62,7 +58,6 @@ public class TicketController {
     }
 
     @PutMapping("/status/{id}")
-    @PreAuthorize("hasRole('TECH_MANAGER') || hasRole('OFFERS_MANAGER')")
     public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestBody UpdateStatusRequest status) throws IllegalAccessException {
         ticketService.changeStatus(id, status.getStatus());
         return ResponseEntity.noContent().build();

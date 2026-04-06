@@ -3,6 +3,7 @@ package com.traffgun.acc.specification;
 import com.traffgun.acc.entity.Ticket;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -49,5 +50,10 @@ public class TicketSpecification {
 
             return cb.equal(join.get("id"), assignedTo);
         };
+    }
+
+    public static Specification<Ticket> hasProjectId(@NotNull Long projectId) {
+        return (root, query, cb) ->
+                cb.equal(root.get("project").get("id"), projectId);
     }
 }

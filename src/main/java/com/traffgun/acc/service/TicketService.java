@@ -5,14 +5,12 @@ import com.traffgun.acc.dto.UpdateCommentRequest;
 import com.traffgun.acc.dto.ticket.CreateTicketRequest;
 import com.traffgun.acc.dto.ticket.TicketFilter;
 import com.traffgun.acc.dto.ticket.UpdateTicketRequest;
-import com.traffgun.acc.entity.Ticket;
-import com.traffgun.acc.entity.TicketComment;
-import com.traffgun.acc.entity.TicketFile;
-import com.traffgun.acc.entity.User;
+import com.traffgun.acc.entity.*;
 import com.traffgun.acc.exception.EntityNotFoundException;
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
+import com.traffgun.acc.repository.ProjectRepository;
 import com.traffgun.acc.repository.TicketCommentRepository;
 import com.traffgun.acc.repository.TicketRepository;
 import com.traffgun.acc.specification.TicketSpecification;
@@ -45,17 +43,20 @@ public class TicketService {
     private final TicketCommentRepository ticketCommentRepository;
     private final UserService userService;
     private final TicketBot ticketBot;
+    private final ProjectRepository projectRepository;
+    private final EmployeeService employeeService;
 
     @Transactional
     public Ticket create(@Valid CreateTicketRequest request) throws IllegalAccessException {
-        List<User> users = userService.findAllByIds(request.getAssignedTo());
-
+        List<Employee> employees = request.getAssignedTo() == null ? new ArrayList<>() : employeeService.findAllByIds(request.getAssignedTo());
+        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new EntityNotFoundException(request.getProjectId()));
         Ticket ticket = Ticket.builder()
                 .text(request.getText())
                 .type(request.getType())
                 .status(TicketStatus.OPENED)
-                .createdBy(userService.getCurrentUser())
-                .assignedTo(new HashSet<>(users))
+                .createdBy(employeeService.findByUser(project.getId()).orElseThrow(EntityNotFoundException::new))
+                .assignedTo(new HashSet<>(employees))
+                .project(project)
                 .build();
 
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
@@ -110,8 +111,8 @@ public class TicketService {
     public Ticket update(Ticket ticket, @Valid UpdateTicketRequest request) {
         ticket.setText(request.getText());
         ticket.setStatus(request.getStatus());
-        List<User> users = userService.findAllByIds(request.getAssignedTo());
-        ticket.setAssignedTo(new HashSet<>(users));
+        List<Employee> employees = employeeService.findAllByIds(request.getAssignedTo());
+        ticket.setAssignedTo(new HashSet<>(employees));
         if (request.getFilesToDelete() != null) {
             removeFiles(ticket, request.getFilesToDelete());
         }
@@ -155,14 +156,12 @@ public class TicketService {
             } catch (Exception ignored) {
             }
         });
-        ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> {
-            comment.getAttachments().forEach(f -> {
-                try {
-                    Files.deleteIfExists(Paths.get(f.getFileUrl()));
-                } catch (Exception ignored) {
-                }
-            });
-        });
+        ticketCommentRepository.findAllByTicket(ticket).forEach(comment -> comment.getAttachments().forEach(f -> {
+            try {
+                Files.deleteIfExists(Paths.get(f.getFileUrl()));
+            } catch (Exception ignored) {
+            }
+        }));
         ticketCommentRepository.deleteAllByTicket(ticket);
 
         repository.deleteById(id);
@@ -173,6 +172,8 @@ public class TicketService {
         Specification<Ticket> spec = (root, query, cb) -> cb.conjunction();
 
         spec = TicketSpecification.hasTypes(filter.getTypes())
+                .and(TicketSpecification.hasProjectId(filter.getProjectId()))
+                .and(TicketSpecification.hasTypes(filter.getTypes()))
                 .and(TicketSpecification.hasStatus(filter.getStatus()))
                 .and(
                         TicketSpecification.hasCreatedBy(filter.getCreatedBy())
@@ -188,7 +189,7 @@ public class TicketService {
     public TicketComment addComment(Long ticketId, CreateCommentRequest request) throws IllegalAccessException {
         Ticket ticket = repository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
+        Project project = ticket.getProject();
         TicketComment comment = TicketComment.builder()
                 .text(request.getText())
                 .ticket(ticket)
@@ -227,7 +228,7 @@ public class TicketService {
 
         if (ticket.getType() == TicketType.TECH_GOAL
                 && ticket.getStatus() == TicketStatus.CLOSED
-                && userService.getCurrentUser().getRole() == Role.MANAGER) {
+                && employeeService.findByUser(project.getId()).orElseThrow(EntityNotFoundException::new).getRole() == EmployeeRole.MANAGER) {
             ticket.setStatus(TicketStatus.OPENED);
             repository.save(ticket);
         }
@@ -314,7 +315,7 @@ public class TicketService {
         ticket.setStatus(status);
         if (ticket.getType() == TicketType.TECH_GOAL) {
             if (status == TicketStatus.IN_PROGRESS) {
-                ticket.setOperatedBy(userService.getCurrentUser());
+                ticket.setOperatedBy(employeeService.findByUser(ticket.getProject().getId()).orElseThrow(EntityNotFoundException::new));
             } else {
                 ticket.setOperatedBy(null);
             }

@@ -28,5 +28,4 @@ public class TicketFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private TicketComment comment;
-
 }

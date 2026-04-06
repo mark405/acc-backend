@@ -1,20 +1,26 @@
 package com.traffgun.acc.mapper;
 
+import com.traffgun.acc.dto.project.ProjectResponse;
 import com.traffgun.acc.dto.register.RegisterRequest;
 import com.traffgun.acc.dto.register.RegisterResponse;
 import com.traffgun.acc.dto.user.UserResponse;
+import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.entity.User;
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.UserRole;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
 
     public User toEntity(RegisterRequest request) {
         return User.builder()
                 .username(request.getUsername())
                 .password(request.getPassword())
-                .role(Role.MANAGER)
+                .role(UserRole.USER)
                 .build();
     }
 
@@ -35,6 +41,20 @@ public class UserMapper {
                 user.getCreatedAt(),
                 user.getModifiedAt(),
                 user.getTotpEnabled(),
+                List.of(),
+                user.getOffersEditable()
+        );
+    }
+
+    public UserResponse toUserDto(User user, List<ProjectResponse> projects) {
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getModifiedAt(),
+                user.getTotpEnabled(),
+               projects,
                 user.getOffersEditable()
         );
     }

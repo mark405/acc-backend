@@ -8,6 +8,8 @@ import lombok.Data;
 public class CreateCategoryRequest {
     @NotNull
     private Long boardId;
+    @NotNull
+    private Long projectId;
     @NotBlank
     private String name;
     private String comment;

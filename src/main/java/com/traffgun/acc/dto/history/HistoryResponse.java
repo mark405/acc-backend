@@ -1,6 +1,6 @@
 package com.traffgun.acc.dto.history;
 
-import com.traffgun.acc.dto.user.UserResponse;
+import com.traffgun.acc.dto.employee.EmployeeResponse;
 import com.traffgun.acc.model.history.HistoryBody;
 import com.traffgun.acc.model.history.HistoryType;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.Instant;
 public class HistoryResponse {
     private Long id;
     private HistoryBody body;
-    private UserResponse user;
+    private EmployeeResponse employee;
     private HistoryType type;
     private Instant date;
 }

@@ -10,4 +10,9 @@ public class EntityNotFoundException extends RuntimeException {
         super("NOT_FOUND");
         this.id = id;
     }
+
+    public EntityNotFoundException() {
+        super("NOT_FOUND");
+        this.id = null;
+    }
 }

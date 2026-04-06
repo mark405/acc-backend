@@ -4,12 +4,10 @@ import com.traffgun.acc.dto.employee.CreateAdvanceRequest;
 import com.traffgun.acc.dto.employee.UpdateAdvanceRequest;
 import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.EmployeeAdvance;
-import com.traffgun.acc.entity.EmployeeFinance;
 import com.traffgun.acc.entity.History;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.model.history.EmployeeAdvanceCreatedHistoryBody;
 import com.traffgun.acc.model.history.EmployeeAdvanceDeletedHistoryBody;
-import com.traffgun.acc.model.history.EmployeeInfoDeletedHistoryBody;
 import com.traffgun.acc.model.history.HistoryType;
 import com.traffgun.acc.repository.EmployeeAdvanceRepository;
 import com.traffgun.acc.repository.EmployeeRepository;
@@ -31,7 +29,6 @@ public class EmployeeAdvanceService {
     private final EmployeeAdvanceRepository repository;
     private final EmployeeRepository employeeRepository;
     private final HistoryRepository historyRepository;
-    private final UserService userService;
 
     @Transactional(readOnly = true)
     public Optional<EmployeeAdvance> findById(Long id) {
@@ -42,7 +39,6 @@ public class EmployeeAdvanceService {
     public EmployeeAdvance create(CreateAdvanceRequest request) throws IllegalAccessException {
         Employee employee = employeeRepository.findById(request.getEmployeeId())
                 .orElseThrow(() -> new EntityNotFoundException(request.getEmployeeId()));
-
         var saved = repository.save(EmployeeAdvance.builder()
                 .employee(employee)
                 .date(request.getDate())
@@ -51,9 +47,10 @@ public class EmployeeAdvanceService {
         );
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(employee)
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceCreatedHistoryBody(saved.getEmployee().getName(), saved.getDate()))
+                .project(employee.getProject())
                 .build()
         );
 
@@ -75,7 +72,7 @@ public class EmployeeAdvanceService {
         repository.deleteById(id);
 
         historyRepository.save(History.builder()
-                .user(userService.getCurrentUser())
+                .employee(advance.getEmployee())
                 .type(HistoryType.EMPLOYEE)
                 .body(new EmployeeAdvanceDeletedHistoryBody(advance.getEmployee().getName(), advance.getDate()))
                 .build()

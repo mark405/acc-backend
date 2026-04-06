@@ -1,8 +1,16 @@
 package com.traffgun.acc.entity;
 
+import com.traffgun.acc.model.EmployeeRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "employees")
@@ -11,12 +19,23 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(
+        name = "Employee.user",
+        attributeNodes = @NamedAttributeNode("user")
+)
+@NamedEntityGraph(
+        name = "Employee.full",
+        attributeNodes = {
+                @NamedAttributeNode("user"),
+                @NamedAttributeNode("columns")
+        }
+)
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     @NotBlank
     private String name;
 
@@ -24,7 +43,7 @@ public class Employee {
 
     private Double rating;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
@@ -33,5 +52,25 @@ public class Employee {
     )
     private User user;
 
-    private Double qfd;
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Project project;
+
+    @Column(name = "project_id", insertable = false, updatable = false)
+    private Long projectId;
+
+    @Column(columnDefinition = "varchar")
+    @Enumerated(EnumType.STRING)
+    private EmployeeRole role;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean active = true;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmployeeColumn> columns = new HashSet<>();
 }

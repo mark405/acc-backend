@@ -1,8 +1,7 @@
 package com.traffgun.acc.entity;
 
-import com.traffgun.acc.model.Role;
+import com.traffgun.acc.model.EmployeeRole;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -22,7 +21,7 @@ public class TelegramUser {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private EmployeeRole role;
 
     @Column
     private Long managerId;

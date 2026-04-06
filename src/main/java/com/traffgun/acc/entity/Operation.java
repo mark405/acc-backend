@@ -4,6 +4,8 @@ import com.traffgun.acc.model.OperationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
@@ -39,6 +41,11 @@ public class Operation {
 
     @Column(nullable = false)
     private Instant date;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Project project;
 
     @PrePersist
     public void prePersist() {

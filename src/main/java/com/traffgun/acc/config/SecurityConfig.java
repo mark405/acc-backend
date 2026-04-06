@@ -28,6 +28,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 List.of(
                         "https://traffgun-acc.store",
+                        "http://127.0.0.1:3000",
+                        "http://142.93.160.90:3000/",
                         "https://api.traffgun-acc.store",
                         "http://localhost:3000"
                 )

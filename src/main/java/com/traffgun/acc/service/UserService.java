@@ -2,18 +2,16 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.user.ChangePasswordRequest;
 import com.traffgun.acc.entity.Employee;
-import com.traffgun.acc.entity.History;
 import com.traffgun.acc.entity.User;
 import com.traffgun.acc.exception.EntityNotFoundException;
 import com.traffgun.acc.exception.PasswordsDoNotMatchException;
 import com.traffgun.acc.exception.UserNotFoundException;
-import com.traffgun.acc.model.Role;
-import com.traffgun.acc.model.history.*;
+import com.traffgun.acc.model.UserRole;
 import com.traffgun.acc.repository.EmployeeRepository;
-import com.traffgun.acc.repository.HistoryRepository;
 import com.traffgun.acc.repository.UserRepository;
 import com.traffgun.acc.specification.UserSpecification;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,16 +26,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
-    private final HistoryRepository historyRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User getCurrentUser() throws IllegalAccessException {
@@ -58,21 +54,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User saved = userRepository.save(user);
-
-        if (saved.getRole() != Role.ADMIN) {
-            Employee employee = Employee.builder().name(saved.getUsername()).rating(0D).user(saved).build();
-            employeeRepository.save(employee);
-        }
-
-        historyRepository.save(History.builder()
-                .user(saved)
-                .type(HistoryType.USER)
-                .body(new UserCreatedHistoryBody(saved.getUsername()))
-                .build()
-        );
-
-        return saved;
+        return userRepository.save(user);
     }
 
     @Override
@@ -91,7 +73,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<User> findAll(String username, Role role, String sortBy, String direction, int page, int size) {
+    public Page<User> findAll(Long projectId, String username, UserRole role, String sortBy, String direction, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -102,6 +84,19 @@ public class UserService implements UserDetailsService {
                 .and(UserSpecification.hasRole(role))
                 .and(UserSpecification.hasActiveTrue());
 
+        if (projectId != null) {
+            spec = spec.and((root, query, cb) -> {
+                Objects.requireNonNull(query, "query is null");
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<Employee> employeeRoot = subquery.from(Employee.class);
+                subquery.select(employeeRoot.get("user").get("id"))
+                        .where(cb.equal(employeeRoot.get("project").get("id"), projectId));
+
+                return cb.not(root.get("id").in(subquery));
+            });
+        }
+
+
         return userRepository.findAll(spec, pageable);
     }
 
@@ -111,58 +106,23 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void changePassword(User user, ChangePasswordRequest request) throws IllegalAccessException {
+    public void changePassword(User user, ChangePasswordRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new PasswordsDoNotMatchException();
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserPasswordChangedHistoryBody(user.getUsername()))
-                .build()
-        );
     }
 
     @Transactional
     public void deleteById(Long id) throws IllegalAccessException {
         User user = userRepository.findByIdAndActiveIsTrue(id).orElseThrow(() -> new EntityNotFoundException(id));
-        user.setActive(false);
-        userRepository.save(user);
-
-        employeeRepository.deleteById(user.getId());
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserDeletedHistoryBody(user.getUsername()))
-                .build()
-        );
-    }
-
-    @Transactional
-    public void changeRole(User user, Role role) throws IllegalAccessException {
-        user.setRole(role);
-        userRepository.save(user);
-
-        historyRepository.save(History.builder()
-                .user(getCurrentUser())
-                .type(HistoryType.USER)
-                .body(new UserRoleChangedHistoryBody(user.getUsername()))
-                .build()
-        );
+        userRepository.delete(user);
     }
 
     @Transactional(readOnly = true)
-    public List<User> findAllByIds(@NotEmpty List<Long> assignedTo) {
-        return userRepository.findAllById(assignedTo);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User>  findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findByUsernameAndActiveIsTrue(username);
     }
 

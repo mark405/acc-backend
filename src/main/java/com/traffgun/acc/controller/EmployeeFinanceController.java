@@ -1,9 +1,6 @@
 package com.traffgun.acc.controller;
 
-import com.traffgun.acc.dto.employee.CreateFinanceRequest;
-import com.traffgun.acc.dto.employee.EmployeeAdvanceResponse;
-import com.traffgun.acc.dto.employee.EmployeeFinanceResponse;
-import com.traffgun.acc.dto.employee.UpdateFinanceRequest;
+import com.traffgun.acc.dto.employee.*;
 import com.traffgun.acc.entity.EmployeeAdvance;
 import com.traffgun.acc.entity.EmployeeFinance;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -37,14 +34,12 @@ public class EmployeeFinanceController {
     private final EmployeeAdvanceMapper advanceMapper;
 
     @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeFinanceResponse createFinance(@RequestBody @Valid CreateFinanceRequest request) throws IllegalAccessException {
         EmployeeFinance finance = service.create(request);
         return mapper.toDto(finance, Collections.emptyList());
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public EmployeeFinanceResponse updateFinance(@PathVariable("id") Long id, @RequestBody @Valid UpdateFinanceRequest request) throws IllegalAccessException {
         EmployeeFinance finance = service.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         EmployeeFinance updatedFinance = service.update(finance, request);
@@ -52,7 +47,6 @@ public class EmployeeFinanceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteFinance(@PathVariable("id") Long id) throws IllegalAccessException {
         service.deleteById(id);
@@ -72,9 +66,7 @@ public class EmployeeFinanceController {
                     f.getId(),
                     f.getStartDate(),
                     f.getEndDate(),
-                    f.getIncomeQFD(),
-                    f.getPaidRef(),
-                    f.getPercentQFD(),
+                    Collections.emptyList(),
                     Collections.emptyList()
             ));
         }
@@ -106,10 +98,8 @@ public class EmployeeFinanceController {
                         f.getId(),
                         f.getStartDate(),
                         f.getEndDate(),
-                        f.getIncomeQFD(),
-                        f.getPaidRef(),
-                        f.getPercentQFD(),
-                        advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList())
+                        advancesByFinanceId.getOrDefault(f.getId(), Collections.emptyList()),
+                        f.getValues().stream().map(it -> new ValueResponse(it.getId(), it.getValue(), it.getEmployeeColumnId())).toList()
                 ));
     }
 }

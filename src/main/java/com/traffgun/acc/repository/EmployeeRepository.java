@@ -1,16 +1,33 @@
 package com.traffgun.acc.repository;
 
 import com.traffgun.acc.entity.Employee;
+import com.traffgun.acc.entity.Project;
 import com.traffgun.acc.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
-    Page<Employee> findByNameContainingIgnoreCaseOrCommentContainingIgnoreCase(String name, String comment, Pageable pageable);
+public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
+    @EntityGraph(value = "Employee.full")
+    Optional<Employee> findByUserAndProjectAndActiveIsTrue(User user, Project project);
 
-    Employee findByUser(User user);
+    @EntityGraph(value = "Employee.user")
+    Page<Employee> findAll(Specification<Employee> spec, Pageable pageable);
 
-    void deleteByUser(User user);
+    Optional<Employee> findByNameAndActiveIsTrue(String name);
+
+    @EntityGraph(value = "Employee.full")
+    Optional<Employee> findByIdAndActiveIsTrue(Long id);
+
+    @EntityGraph(value = "Employee.user")
+    List<Employee> findAllByUserAndActiveIsTrue(User user);
+
+    List<Employee> findAllByUserIdIn(Collection<Long> userIds);
 }

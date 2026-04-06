@@ -2,6 +2,7 @@ package com.traffgun.acc.mapper;
 
 import com.traffgun.acc.dto.employee.EmployeeAdvanceResponse;
 import com.traffgun.acc.dto.employee.EmployeeFinanceResponse;
+import com.traffgun.acc.dto.employee.ValueResponse;
 import com.traffgun.acc.entity.EmployeeAdvance;
 import com.traffgun.acc.entity.EmployeeFinance;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,8 @@ public class EmployeeFinanceMapper {
                 finance.getId(),
                 finance.getStartDate(),
                 finance.getEndDate(),
-                finance.getIncomeQFD(),
-                finance.getPaidRef(),
-                finance.getPercentQFD(),
-                advances
+                advances,
+                finance.getValues().stream().map(it -> new ValueResponse(it.getId(), it.getValue(), it.getEmployeeColumnId())).toList()
         );
     }
 }

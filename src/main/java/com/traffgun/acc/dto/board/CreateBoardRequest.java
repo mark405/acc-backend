@@ -12,4 +12,7 @@ public class CreateBoardRequest {
 
     @NotNull
     private OperationType type;
+
+    @NotNull
+    private Long projectId;
 }

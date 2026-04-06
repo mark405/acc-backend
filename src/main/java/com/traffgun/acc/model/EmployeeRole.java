@@ -1,6 +1,6 @@
 package com.traffgun.acc.model;
 
-public enum Role {
+public enum EmployeeRole {
     MANAGER,
     ADMIN,
     OFFERS_MANAGER,
