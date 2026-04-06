@@ -192,7 +192,7 @@ public class TicketService {
         TicketComment comment = TicketComment.builder()
                 .text(request.getText())
                 .ticket(ticket)
-                .createdBy(userService.getCurrentUser())
+                .createdBy(employeeService.findByUser(project.getId()).orElseThrow(EntityNotFoundException::new))
                 .build();
 
         // handle attachments

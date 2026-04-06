@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @Component
 @RequiredArgsConstructor
 public class TicketCommentMapper {
-    private final UserMapper userMapper;
+    private final EmployeeMapper employeeMapper;
     private final TicketFileMapper ticketFileMapper;
 
     public TicketCommentResponse toDto(TicketComment ticketComment) {
@@ -18,7 +18,7 @@ public class TicketCommentMapper {
                 ticketComment.getId(),
                 ticketComment.getText(),
                 ticketComment.getAttachments() != null ? ticketComment.getAttachments().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
-                userMapper.toUserDto(ticketComment.getCreatedBy()),
+                employeeMapper.toDto(ticketComment.getCreatedBy()),
                 ticketComment.getCreatedAt()
         );
     }

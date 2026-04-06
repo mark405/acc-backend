@@ -130,7 +130,7 @@ public class TicketBot {
 
     // Notify ticket creator about a new comment
     public void notifyNewComment(Long ticketId, Long userId, TicketComment comment) {
-        String creator = comment.getCreatedBy().getUsername();
+        String creator = comment.getCreatedBy().getName();
         telegramUserService.findByRoleAndManagerId(EmployeeRole.MANAGER, userId).forEach(user -> {
             String message = "💬 Новий коментар до Тікету #" + ticketId + "\n" +
                     "Створив: " + escapeMarkdown(creator) + "\n\n" +

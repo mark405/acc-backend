@@ -1,5 +1,6 @@
 package com.traffgun.acc.dto.ticket;
 
+import com.traffgun.acc.dto.employee.EmployeeResponse;
 import com.traffgun.acc.dto.user.UserResponse;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
@@ -15,6 +16,6 @@ public class TicketCommentResponse {
     private Long id;
     private String text;
     private List<TicketFileResponse> attachments;
-    private UserResponse createdBy;
+    private EmployeeResponse createdBy;
     private Instant createdAt;
 }

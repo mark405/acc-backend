@@ -37,7 +37,7 @@ public class TicketComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    private Employee createdBy;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketFile> attachments = new ArrayList<>();
