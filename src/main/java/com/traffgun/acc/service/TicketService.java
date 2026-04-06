@@ -169,11 +169,10 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public Page<Ticket> findAll(@Valid TicketFilter filter) {
-        Specification<Ticket> spec = (root, query, cb) -> cb.conjunction();
+        Specification<Ticket> spec;
 
         spec = TicketSpecification.hasTypes(filter.getTypes())
                 .and(TicketSpecification.hasProjectId(filter.getProjectId()))
-                .and(TicketSpecification.hasTypes(filter.getTypes()))
                 .and(TicketSpecification.hasStatus(filter.getStatus()))
                 .and(
                         TicketSpecification.hasCreatedBy(filter.getCreatedBy())
