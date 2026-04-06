@@ -32,9 +32,6 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<Project> findAll() throws IllegalAccessException {
         User user = userService.getCurrentUser();
-        if (user.getRole() == UserRole.ADMIN) {
-            return projectRepository.findAll();
-        }
 
         List<Employee> employees = employeeRepository.findAllByUserAndActiveIsTrue(user);
 
