@@ -2,8 +2,7 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.graph.AddEdgeRequest;
 import com.traffgun.acc.dto.graph.AddNodeRequest;
-import com.traffgun.acc.dto.graph.EdgeResponse;
-import com.traffgun.acc.dto.graph.UpdateNodePositionRequest;
+import com.traffgun.acc.dto.graph.UpdateNodeRequest;
 import com.traffgun.acc.entity.Edge;
 import com.traffgun.acc.entity.Node;
 import com.traffgun.acc.exception.EntityNotFoundException;
@@ -36,12 +35,14 @@ public class GraphService {
                 .x(node.getX())
                 .y(node.getY())
                 .projectId(projectId)
+                .color(node.getColor())
                 .build());
     }
 
     @Transactional
     public void deleteNode(Long id) {
         nodeRepository.deleteById(id);
+        edgeRepository.deleteAllBySourceOrTarget(id, id);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +52,7 @@ public class GraphService {
 
     @Transactional
     public Edge createEdge(AddEdgeRequest edge, Long projectId) {
-        return edgeRepository.save(Edge.builder().projectId(projectId).source(edge.getSource()).target(edge.getTarget()).build());
+        return edgeRepository.save(Edge.builder().projectId(projectId).source(edge.getSource()).target(edge.getTarget()).sourceHandle(edge.getSourceHandle()).targetHandle(edge.getTargetHandle()).build());
     }
 
     @Transactional
@@ -60,12 +61,13 @@ public class GraphService {
     }
 
     @Transactional
-    public Node updateNodePosition(Long id, UpdateNodePositionRequest request) {
+    public Node updateNodePosition(Long id, UpdateNodeRequest request) {
         Node node = nodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
 
         node.setX(request.getX());
         node.setY(request.getY());
+        node.setColor(request.getColor());
 
         return nodeRepository.save(node);
     }

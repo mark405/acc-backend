@@ -20,4 +20,8 @@ public class Edge {
     private Long source;
 
     private Long target;
+
+    private String sourceHandle;
+
+    private String targetHandle;
 }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface EdgeRepository extends JpaRepository<Edge, Long> {
     List<Edge> findAllByProjectId(Long projectId);
+
+    void deleteAllBySourceOrTarget(Long source, Long target);
 }

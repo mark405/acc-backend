@@ -17,4 +17,6 @@ public class AddNodeRequest {
     private Double x;
     @NotNull
     private Double y;
+    @NotNull
+    private String color;
 }

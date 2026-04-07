@@ -6,10 +6,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class NodeResponse {
-    public Long id;
-    public String type;
-    public String name;
-    public String role;
-    public Double x;
-    public Double y;
+    private Long id;
+    private String type;
+    private String name;
+    private String role;
+    private Double x;
+    private Double y;
+    private String color;
 }

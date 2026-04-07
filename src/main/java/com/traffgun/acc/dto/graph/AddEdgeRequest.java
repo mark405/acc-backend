@@ -9,4 +9,8 @@ public class AddEdgeRequest {
     private Long target;
     @NotNull
     private Long source;
+    @NotNull
+    private String sourceHandle;
+    @NotNull
+    private String targetHandle;
 }

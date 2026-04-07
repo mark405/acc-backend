@@ -150,6 +150,10 @@ public class TicketService {
     @Transactional
     public void deleteById(Long id) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        if (ticket.getAssignedTo() != null) {
+            ticket.getAssignedTo().clear();
+        }
+        repository.save(ticket);
         ticket.getFiles().forEach(f -> {
             try {
                 Files.deleteIfExists(Paths.get(f.getFileUrl()));

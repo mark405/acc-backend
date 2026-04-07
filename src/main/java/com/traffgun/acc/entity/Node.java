@@ -32,4 +32,7 @@ public class Node {
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = false)
+    private String color;
 }

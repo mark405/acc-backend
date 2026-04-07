@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class EdgeResponse {
-    public Long id;
-    public Long source;
-    public Long target;
+    private Long id;
+    private Long source;
+    private Long target;
+    private String sourceHandle;
+    private String targetHandle;
 }

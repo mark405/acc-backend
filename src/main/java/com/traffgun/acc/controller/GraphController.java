@@ -16,7 +16,7 @@ public class GraphController {
 
     @GetMapping("/{projectId}/nodes")
     public List<NodeResponse> getNodes(@PathVariable Long projectId) {
-        return graphService.getAllNodes(projectId).stream().map(it -> new NodeResponse(it.getId(), it.getType(), it.getName(), it.getRole(), it.getX(), it.getY())).toList();
+        return graphService.getAllNodes(projectId).stream().map(it -> new NodeResponse(it.getId(), it.getType(), it.getName(), it.getRole(), it.getX(), it.getY(), it.getColor())).toList();
     }
 
     @PostMapping("/{projectId}/nodes")
@@ -25,7 +25,7 @@ public class GraphController {
             @RequestBody AddNodeRequest node
     ) {
         var created = graphService.createNode(node, projectId);
-        return new NodeResponse(created.getId(), created.getType(), created.getName(), created.getRole(), created.getX(), created.getY());
+        return new NodeResponse(created.getId(), created.getType(), created.getName(), created.getRole(), created.getX(), created.getY(), created.getColor());
     }
 
     @DeleteMapping("/nodes/{id}")
@@ -35,13 +35,13 @@ public class GraphController {
 
     @GetMapping("/{projectId}/edges")
     public List<EdgeResponse> getEdges(@PathVariable Long projectId) {
-        return graphService.getAllEdges(projectId).stream().map(it -> new EdgeResponse(it.getId(), it.getSource(),it.getTarget())).toList();
+        return graphService.getAllEdges(projectId).stream().map(it -> new EdgeResponse(it.getId(), it.getSource(),it.getTarget(), it.getSourceHandle(), it.getTargetHandle())).toList();
     }
 
     @PutMapping("/nodes/{id}")
     public NodeResponse updateNodePosition(
             @PathVariable Long id,
-            @RequestBody UpdateNodePositionRequest request
+            @RequestBody UpdateNodeRequest request
     ) {
         var updated = graphService.updateNodePosition(id, request);
         return new NodeResponse(
@@ -50,7 +50,8 @@ public class GraphController {
                 updated.getName(),
                 updated.getRole(),
                 updated.getX(),
-                updated.getY()
+                updated.getY(),
+                updated.getColor()
         );
     }
 
@@ -60,7 +61,7 @@ public class GraphController {
             @RequestBody AddEdgeRequest edge
     ) {
         var created = graphService.createEdge(edge, projectId);
-        return new EdgeResponse(created.getId(), created.getSource(), created.getTarget());
+        return new EdgeResponse(created.getId(), created.getSource(), created.getTarget(), created.getSourceHandle(), created.getTargetHandle());
     }
 
     @DeleteMapping("/edges/{id}")
