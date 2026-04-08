@@ -27,11 +27,6 @@ public class BoardService {
     private final ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
-    public Board findMainBoard(OperationType operationType, Long projectId) {
-        return boardRepository.findByLevelTypeAndOperationTypeAndProject_Id(LevelType.MAIN, operationType, projectId);
-    }
-
-    @Transactional(readOnly = true)
     public List<Board> findAll(Long projectId, OperationType type) {
         return boardRepository.findAllByProject_IdAndOperationType(projectId, type);
     }

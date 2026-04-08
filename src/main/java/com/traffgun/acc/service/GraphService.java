@@ -31,7 +31,7 @@ public class GraphService {
         return nodeRepository.save(Node.builder()
                 .type(node.getType())
                 .name(node.getName())
-                .role(node.getName())
+                .role(node.getRole())
                 .x(node.getX())
                 .y(node.getY())
                 .projectId(projectId)

@@ -30,8 +30,7 @@ public class StatisticsService {
         Instant start = Instant.parse(year + "-01-01T00:00:00Z");
         Instant end = Instant.parse(year + "-12-31T23:59:59Z");
 
-        Board main = boardService.findMainBoard(type, projectId);
-        Set<Operation> operations = operationRepository.findAllByDateBetweenAndBoardAndOperationTypeAndProject_Id(start, end, main, type, projectId);
+        Set<Operation> operations = operationRepository.findAllByDateBetweenAndOperationTypeAndProject_Id(start, end, type, projectId);
 
         ZoneId zone = ZoneId.of("Europe/Kyiv");
 
