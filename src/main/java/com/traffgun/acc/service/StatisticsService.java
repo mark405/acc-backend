@@ -2,7 +2,6 @@ package com.traffgun.acc.service;
 
 import com.traffgun.acc.dto.statistics.MonthStatisticsResponse;
 import com.traffgun.acc.dto.statistics.StatisticsResponse;
-import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.model.OperationType;
 import com.traffgun.acc.repository.OperationRepository;

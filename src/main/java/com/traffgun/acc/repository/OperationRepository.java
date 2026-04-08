@@ -1,6 +1,5 @@
 package com.traffgun.acc.repository;
 
-import com.traffgun.acc.entity.Board;
 import com.traffgun.acc.entity.Operation;
 import com.traffgun.acc.model.OperationType;
 import org.springframework.data.jpa.repository.JpaRepository;
