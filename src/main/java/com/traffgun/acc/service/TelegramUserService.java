@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -72,5 +73,10 @@ public class TelegramUserService {
                 .managerId(found.getId())
                 .build();
         repository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TelegramUser> findAllByManagers(List<Employee> list) {
+        return repository.findAllByManagerIdIn(list.stream().map(Employee::getId).toList());
     }
 }

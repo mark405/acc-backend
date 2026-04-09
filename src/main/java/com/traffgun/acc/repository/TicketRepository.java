@@ -1,6 +1,8 @@
 package com.traffgun.acc.repository;
 
 import com.traffgun.acc.entity.Ticket;
+import com.traffgun.acc.model.TicketStatus;
+import com.traffgun.acc.model.TicketType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecificationExecutor<Ticket> {
@@ -21,4 +25,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecif
     @EntityGraph(value = "Ticket.full")
     Optional<Ticket> findById(@NonNull Long id);
 
+    @EntityGraph(value = "Ticket.full")
+    List<Ticket> findAllByType(TicketType type);
+
+    List<Ticket> findAllByTypeAndStatusIn(TicketType type, Collection<TicketStatus> statuses);
 }

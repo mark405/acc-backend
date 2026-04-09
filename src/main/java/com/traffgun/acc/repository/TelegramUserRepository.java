@@ -16,4 +16,6 @@ public interface TelegramUserRepository extends JpaRepository<TelegramUser, Long
     Optional<TelegramUser> findByChatId(Long chatId);
 
     List<TelegramUser> findAllByRoleAndManagerIdIn(EmployeeRole role, Collection<Long> managerIds);
+
+    List<TelegramUser> findAllByManagerIdIn(Collection<Long> managerIds);
 }

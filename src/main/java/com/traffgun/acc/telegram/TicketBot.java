@@ -8,11 +8,15 @@ import com.traffgun.acc.entity.Employee;
 import com.traffgun.acc.entity.Ticket;
 import com.traffgun.acc.entity.TicketComment;
 import com.traffgun.acc.model.EmployeeRole;
+import com.traffgun.acc.model.TicketStatus;
+import com.traffgun.acc.model.TicketType;
 import com.traffgun.acc.repository.EmployeeRepository;
+import com.traffgun.acc.repository.TicketRepository;
 import com.traffgun.acc.service.TelegramUserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,15 +31,18 @@ public class TicketBot {
     private final TelegramBot bot;
     private final TelegramUserService telegramUserService;
     private final EmployeeRepository employeeRepository;
+    private final TicketRepository ticketRepository;
 
     // Tracks users who are expected to send manager login
     private final Map<Long, EmployeeRole> waitingForLogin = new ConcurrentHashMap<>();
 
     public TicketBot(TelegramUserService telegramUserService,
                      EmployeeRepository employeeRepository,
+                     TicketRepository ticketRepository,
                      @Value("${telegram.bot.token}") String botToken) {
         this.telegramUserService = telegramUserService;
         this.employeeRepository = employeeRepository;
+        this.ticketRepository = ticketRepository;
         this.bot = new TelegramBot(botToken);
     }
 
@@ -113,6 +120,27 @@ public class TicketBot {
                     "Опис:\n" + escapeMarkdown(ticket.getText());
             sendMessage(user.getChatId(), message);
         });
+    }
+
+    @Scheduled(fixedRateString = "PT90M")
+    public void notifyCronTasks() {
+        List<Ticket> tasks = ticketRepository.findAllByTypeAndStatusIn(
+                TicketType.TASK,
+                List.of(TicketStatus.OPENED, TicketStatus.IN_PROGRESS)
+        );
+
+        if (tasks.isEmpty()) return;
+
+        List<Long> ids = tasks.stream()
+                .map(Ticket::getId)
+                .toList();
+
+        String message = "У вас є відкриті тікети: " + tasks.size() + "\n" +
+                "ID: " + ids;
+
+        telegramUserService
+                .findAllByManagers(tasks.stream().map(Ticket::getCreatedBy).toList())
+                .forEach(user -> sendMessage(user.getChatId(), message));
     }
 
     public void notifyNewOffersTicket(Ticket ticket) {
