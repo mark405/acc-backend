@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class TicketBot {
     private final TicketRepository ticketRepository;
 
     // Tracks users who are expected to send manager login
-    private final Map<Long, EmployeeRole> waitingForLogin = new ConcurrentHashMap<>();
+    private final Map<Long, String> waitingForLogin = new ConcurrentHashMap<>();
 
     public TicketBot(TelegramUserService telegramUserService,
                      EmployeeRepository employeeRepository,
@@ -69,19 +70,21 @@ public class TicketBot {
                 long chatId = update.message().chat().id();
                 String text = update.message().text();
 
-                EmployeeRole pendingRole = waitingForLogin.get(chatId);
+                if (waitingForLogin.containsKey(chatId)) {
+                    String intent = waitingForLogin.get(chatId);
 
-                if (pendingRole != null) {
                     employeeRepository.findByNameAndActiveIsTrue(text).ifPresentOrElse(
                             manager -> {
-                                if (pendingRole == EmployeeRole.MANAGER) {
+                                if ("TASKS".equals(intent)) {
+                                    telegramUserService.registerTaskUser(chatId, manager.getName());
+                                } else if ("MANAGER".equals(intent)) {
                                     telegramUserService.registerManager(chatId, manager.getName());
-                                } else if (pendingRole == EmployeeRole.OFFERS_MANAGER) {
+                                } else if ("OFFERS".equals(intent)) {
                                     telegramUserService.registerOffersManager(chatId, manager.getName());
                                 }
 
                                 sendMessage(chatId,
-                                        "You are now registered as " + pendingRole +
+                                        "You are now registered as " + manager.getRole() +
                                                 " for name: " + manager.getName());
                             },
                             () -> sendMessage(chatId, "Login not found, try again.")
@@ -96,11 +99,14 @@ public class TicketBot {
                     telegramUserService.registerTechManager(chatId);
                     sendMessage(chatId, "You will receive TECH_GOAL tickets updates.");
                 } else if (text.equalsIgnoreCase("/offers_manager")) {
-                    waitingForLogin.put(chatId, EmployeeRole.OFFERS_MANAGER);
+                    waitingForLogin.put(chatId, "OFFERS");
                     sendMessage(chatId, "Please enter your manager name:");
                 } else if (text.equalsIgnoreCase("/manager")) {
-                    waitingForLogin.put(chatId, EmployeeRole.MANAGER);
+                    waitingForLogin.put(chatId, "MANAGER");
                     sendMessage(chatId, "Please enter your manager name:");
+                } else if (text.equalsIgnoreCase("/tasks")) {
+                    waitingForLogin.put(chatId, "TASKS");
+                    sendMessage(chatId, "Please enter your employee name:");
                 } else {
                     sendMessage(chatId, "Send /tech_manager or /manager or /offers_manager to choose your notifications.");
                 }

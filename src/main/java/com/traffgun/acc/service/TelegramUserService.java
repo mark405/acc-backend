@@ -61,6 +61,7 @@ public class TelegramUserService {
         return repository.findAllByRoleAndManagerIdIn(role, userIds);
     }
 
+    @Transactional
     public void registerOffersManager(long chatId, @NotBlank String name) {
         Employee found = employeeRepository.findByNameAndActiveIsTrue(name)
                 .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
@@ -78,5 +79,20 @@ public class TelegramUserService {
     @Transactional(readOnly = true)
     public List<TelegramUser> findAllByManagers(List<Employee> list) {
         return repository.findAllByManagerIdIn(list.stream().map(Employee::getId).toList());
+    }
+
+    @Transactional
+    public void registerTaskUser(long chatId, @NotBlank String name) {
+        Employee found = employeeRepository.findByNameAndActiveIsTrue(name)
+                .orElseThrow(() -> new IllegalArgumentException("Manager name not found"));
+
+        repository.findByChatId(chatId).ifPresent(repository::delete);
+
+        TelegramUser user = TelegramUser.builder()
+                .chatId(chatId)
+                .role(EmployeeRole.MANAGER)
+                .managerId(found.getId())
+                .build();
+        repository.save(user);
     }
 }
