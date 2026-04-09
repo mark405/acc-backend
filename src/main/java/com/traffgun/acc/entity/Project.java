@@ -23,4 +23,8 @@ public class Project {
     @ManyToOne(fetch = FetchType.EAGER      )
     @JoinColumn(name = "created_by")
     private User createdBy;
+
+    private String comment;
+
+    private Integer index;
 }

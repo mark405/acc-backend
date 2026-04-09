@@ -26,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -141,5 +142,10 @@ public class UserService implements UserDetailsService {
         boolean current = Boolean.TRUE.equals(user.getOffersEditable()); // null-safe
         user.setOffersEditable(!current);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getAdmins() {
+        return userRepository.findAllByRole(UserRole.ADMIN);
     }
 }

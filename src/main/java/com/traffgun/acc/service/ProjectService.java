@@ -51,20 +51,26 @@ public class ProjectService {
     @Transactional
     public Project create(CreateProjectRequest request) throws IllegalAccessException {
         User user = userService.getCurrentUser();
+        List<User> admins = userService.getAdmins();
+        Integer lastIndex = projectRepository.findMaxIndex();
         Project project = projectRepository.save(Project.builder()
                 .name(request.getName())
                 .createdBy(user)
+                .comment(request.getComment())
+                .index(lastIndex + 1)
                 .build()
         );
 
-        employeeRepository.save(Employee.builder()
-                .name(user.getUsername())
-                .project(project)
-                .role(EmployeeRole.ADMIN)
-                .active(true)
-                .user(user)
-                .build()
-        );
+        for (User admin : admins) {
+            employeeRepository.save(Employee.builder()
+                    .name(admin.getUsername())
+                    .project(project)
+                    .role(EmployeeRole.ADMIN)
+                    .active(true)
+                    .user(admin)
+                    .build()
+            );
+        }
 
         boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.EXPENSE).project(project).build());
         boardRepository.save(Board.builder().name("Головна").levelType(LevelType.MAIN).operationType(OperationType.INCOME).project(project).build());
@@ -75,6 +81,8 @@ public class ProjectService {
     @Transactional
     public Project update(Project project, UpdateProjectRequest request) {
         project.setName(request.getName());
+        project.setComment(request.getComment());
+        project.setIndex(request.getIndex());
         return projectRepository.save(project);
     }
 

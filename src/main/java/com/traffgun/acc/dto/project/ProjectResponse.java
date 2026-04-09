@@ -10,4 +10,6 @@ public class ProjectResponse {
     private Long id;
     private String name;
     private UserResponse createdBy;
+    private String comment;
+    private Integer index;
 }

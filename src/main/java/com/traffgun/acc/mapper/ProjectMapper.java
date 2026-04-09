@@ -14,7 +14,9 @@ public class ProjectMapper {
         return new ProjectResponse(
                 project.getId(),
                 project.getName(),
-                userMapper.toUserDto(project.getCreatedBy())
+                userMapper.toUserDto(project.getCreatedBy()),
+                project.getComment(),
+                project.getIndex()
         );
     }
 }
