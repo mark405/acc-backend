@@ -17,7 +17,8 @@ import java.util.Set;
                 @NamedAttributeNode("files"),
                 @NamedAttributeNode("createdBy"),
                 @NamedAttributeNode("operatedBy"),
-                @NamedAttributeNode("assignedTo")
+                @NamedAttributeNode("assignedTo"),
+                @NamedAttributeNode("project")
         }
 )
 @Entity

@@ -1,11 +1,10 @@
 package com.traffgun.acc.entity;
 
-import com.traffgun.acc.model.EmployeeRole;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "telegram_users ")
+@Table(name = "telegram_users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,9 +19,5 @@ public class TelegramUser {
     private Long chatId;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EmployeeRole role;
-
-    @Column
-    private Long managerId;
+    private Long userId;
 }

@@ -28,5 +28,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecif
     @EntityGraph(value = "Ticket.full")
     List<Ticket> findAllByType(TicketType type);
 
+    @EntityGraph(value = "Ticket.full")
     List<Ticket> findAllByTypeAndStatusIn(TicketType type, Collection<TicketStatus> statuses);
 }

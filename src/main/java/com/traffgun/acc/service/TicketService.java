@@ -65,12 +65,7 @@ public class TicketService {
 
         Ticket savedTicket = repository.save(ticket);
 
-        // Send message to bot
-        if (savedTicket.getType() == TicketType.TECH_GOAL) {
-            ticketBot.notifyNewTechTicket(savedTicket);
-        } else {
-            ticketBot.notifyNewOffersTicket(savedTicket);
-        }
+        ticketBot.notifyNewTicket(savedTicket);
 
         return savedTicket;
     }
@@ -236,7 +231,7 @@ public class TicketService {
             repository.save(ticket);
         }
 
-        ticketBot.notifyNewComment(ticketId, ticket.getCreatedBy().getId(), saved);
+        ticketBot.notifyNewComment(ticket, saved);
 
         return saved;
     }
@@ -325,6 +320,6 @@ public class TicketService {
         }
         var saved = repository.save(ticket);
 
-        ticketBot.notifyNewStatus(saved, userService.getCurrentUser().getUsername());
+        ticketBot.notifyNewStatus(saved);
     }
 }
