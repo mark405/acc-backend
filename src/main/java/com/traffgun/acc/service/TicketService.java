@@ -343,6 +343,6 @@ public class TicketService {
     public void changeArchive(Long id, boolean isArchived) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         ticket.setIsArchived(isArchived);
-        var saved = repository.save(ticket);
+        repository.save(ticket);
     }
 }

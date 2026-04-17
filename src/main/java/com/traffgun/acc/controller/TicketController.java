@@ -63,9 +63,9 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/achive/{id}")
+    @PutMapping("/archive/{id}")
     public ResponseEntity<Void> changeArchive(@PathVariable("id") Long id, @RequestBody UpdateArchiveRequest dto) {
-        ticketService.changeArchive(id, dto.getArchive());
+        ticketService.changeArchive(id, dto.getIsArchived());
         return ResponseEntity.noContent().build();
     }
 

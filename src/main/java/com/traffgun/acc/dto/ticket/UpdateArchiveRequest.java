@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class UpdateArchiveRequest {
     @NotNull
-    private Boolean archive;
+    private Boolean isArchived;
 }
