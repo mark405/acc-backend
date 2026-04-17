@@ -333,6 +333,8 @@ public class TicketService {
         }
         if (status == TicketStatus.CLOSED) {
             ticket.setClosedAt(Instant.now());
+        } else {
+            ticket.setClosedAt(null);
         }
         var saved = repository.save(ticket);
 
