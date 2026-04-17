@@ -23,7 +23,8 @@ public class TicketMapper {
                 ticket.getFiles() != null ? ticket.getFiles().stream().map(ticketFileMapper::toDto).toList() : new ArrayList<>(),
                 ticket.getOperatedBy() == null ? null: employeeMapper.toDto(ticket.getOperatedBy()),
                 employeeMapper.toDto(ticket.getCreatedBy()),
-                ticket.getCreatedAt()
+                ticket.getCreatedAt(),
+                ticket.getIsArchived()
         );
     }
 }

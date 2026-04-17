@@ -63,6 +63,12 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/achive/{id}")
+    public ResponseEntity<Void> changeArchive(@PathVariable("id") Long id, @RequestBody UpdateArchiveRequest dto) {
+        ticketService.changeArchive(id, dto.getArchive());
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) {

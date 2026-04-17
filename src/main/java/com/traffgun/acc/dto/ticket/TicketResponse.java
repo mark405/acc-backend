@@ -21,4 +21,5 @@ public class TicketResponse {
     private EmployeeResponse operatedBy;
     private EmployeeResponse createdBy;
     private Instant createdAt;
+    private Boolean isArchived;
 }

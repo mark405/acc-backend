@@ -6,10 +6,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import com.traffgun.acc.entity.*;
-import com.traffgun.acc.model.EmployeeRole;
 import com.traffgun.acc.model.TicketStatus;
 import com.traffgun.acc.model.TicketType;
-import com.traffgun.acc.repository.EmployeeRepository;
 import com.traffgun.acc.repository.TicketRepository;
 import com.traffgun.acc.service.TelegramUserService;
 import com.traffgun.acc.service.UserService;
@@ -17,7 +15,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -162,34 +159,41 @@ public class TicketBot {
     }
 
     private String buildNewTicketMessage(Ticket t) {
-        return """
-            🆕 Новий тікет
+        String content = t.getText() == null ? "" : t.getText();
 
-            🔢 №%d
-            📁 Проєкт: %s
-            👤 Створив: %s
-            🏷 Тип: %s
-            📌 Статус: %s
-            """
+        String preview = content.length() > 50
+                ? content.substring(0, 50) + "..."
+                : content;
+        return """
+                🆕 Новий тікет
+                
+                🔢 №%d
+                📁 Проєкт: %s
+                👤 Створив: %s
+                🏷 Тип: %s
+                📌 Статус: %s
+                💬 Опис: %s
+                """
                 .formatted(
                         t.getId(),
                         t.getProject().getName(),
                         t.getCreatedBy().getName(),
-                        t.getType(),
-                        t.getStatus()
+                        t.getType().getLabel(),
+                        t.getStatus(),
+                        preview
                 );
     }
 
     private String buildNewTicketCommentMessage(Ticket t, TicketComment comment) {
         return """
-        💬 Новий коментар у тікеті
-
-        🔢 №%d
-        📁 Проєкт: %s
-        👤 Автор коментаря: %s
-        📝 Коментар:
-        %s
-        """
+                💬 Новий коментар у тікеті
+                
+                🔢 №%d
+                📁 Проєкт: %s
+                👤 Автор коментаря: %s
+                📝 Коментар:
+                %s
+                """
                 .formatted(
                         t.getId(),
                         t.getProject().getName(),
@@ -277,12 +281,12 @@ public class TicketBot {
 
     private String buildTicketStatusChangedMessage(Ticket t) {
         return """
-        🔄 Статус тікета змінено
-
-        🔢 №%d
-        📁 Проєкт: %s
-        ✅ Стало: %s
-        """
+                🔄 Статус тікета змінено
+                
+                🔢 №%d
+                📁 Проєкт: %s
+                ✅ Стало: %s
+                """
                 .formatted(
                         t.getId(),
                         t.getProject().getName(),

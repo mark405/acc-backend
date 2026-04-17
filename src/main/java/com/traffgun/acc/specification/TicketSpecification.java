@@ -18,6 +18,10 @@ public class TicketSpecification {
         };
     }
 
+    public static Specification<Ticket> hasArchived(Boolean isArchived) {
+        return (root, query, cb) ->
+                isArchived == null ? null : cb.equal(root.get("isArchived"), isArchived);
+    }
 
     public static Specification<Ticket> hasStatus(TicketStatus status) {
         return (root, query, cb) -> {

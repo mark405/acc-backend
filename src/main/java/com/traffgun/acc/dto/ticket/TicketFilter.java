@@ -19,4 +19,5 @@ public class TicketFilter {
     private int size = 25;
     @NotNull
     private Long projectId;
+    private Boolean isArchived;
 }

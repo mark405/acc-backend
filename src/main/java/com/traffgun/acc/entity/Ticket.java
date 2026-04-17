@@ -77,4 +77,10 @@ public class Ticket {
         createdAt = Instant.now();
     }
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isArchived = false;
+
+    private Instant closedAt;
+
 }
