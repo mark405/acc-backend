@@ -12,7 +12,7 @@ public class TicketSpecification {
     public static Specification<Ticket> hasTypes(List<TicketType> types) {
         return (root, query, cb) -> {
             if (types == null || types.isEmpty()) {
-                return null;
+                return cb.notEqual(root.get("type"), TicketType.TASK);
             }
             return root.get("type").in(types);
         };
