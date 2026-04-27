@@ -159,11 +159,6 @@ public class TicketBot {
     }
 
     private String buildNewTicketMessage(Ticket t) {
-        String content = t.getText() == null ? "" : t.getText();
-
-        String preview = content.length() > 50
-                ? content.substring(0, 50) + "..."
-                : content;
         return """
                 🆕 Новий тікет
                 
@@ -180,7 +175,7 @@ public class TicketBot {
                         t.getCreatedBy().getName(),
                         t.getType().getLabel(),
                         t.getStatus(),
-                        preview
+                        t.getText()
                 );
     }
 
@@ -202,7 +197,7 @@ public class TicketBot {
                 );
     }
 
-    @Scheduled(fixedRate = 5400000) // 1.5 hours in ms
+    @Scheduled(cron = "0 0 0 * * *") // every day at 00:00
     public void notifyAboutOpenedTasks() {
         var tickets = ticketRepository.findAllByTypeAndStatusIn(
                 TicketType.TASK,
@@ -246,6 +241,7 @@ public class TicketBot {
             sb.append("• №").append(t.getId()).append("\n")
                     .append("  Проєкт: ").append(t.getProject().getName()).append("\n")
                     .append("  Створив: ").append(t.getCreatedBy().getName()).append("\n")
+                    .append("  Опис: ").append(t.getText()).append("\n")
                     .append("\n");
         }
 
